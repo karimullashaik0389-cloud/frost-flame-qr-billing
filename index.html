@@ -18,10 +18,18 @@
 body{
   margin:0; min-height:100vh; color:var(--ink);
   font-family:Outfit,system-ui,sans-serif;
+  background: var(--bg);
+}
+.bg-video{
+  position:fixed; inset:0; width:100%; height:100%; object-fit:cover;
+  z-index:-2; pointer-events:none; filter:saturate(1.08) brightness(.7);
+}
+.bg-scrim{
+  position:fixed; inset:0; z-index:-1; pointer-events:none;
   background:
-    radial-gradient(900px 500px at 0% -10%, rgba(232,93,4,.28), transparent 55%),
-    radial-gradient(800px 480px at 100% 0%, rgba(125,211,252,.16), transparent 50%),
-    var(--bg);
+    linear-gradient(180deg, rgba(11,7,6,.5), rgba(11,7,6,.78) 50%, rgba(11,7,6,.92)),
+    radial-gradient(700px 420px at 8% 0%, rgba(232,93,4,.25), transparent 60%),
+    radial-gradient(700px 420px at 92% 8%, rgba(125,211,252,.16), transparent 55%);
 }
 .wrap{max-width:460px;margin:0 auto;padding:18px 14px 36px}
 .hero{text-align:center;margin-bottom:14px}
@@ -38,9 +46,10 @@ body{
 .panel{display:none}
 .panel.active{display:block}
 .card{
-  background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 42%), var(--card);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent 42%), rgba(22,16,14,.88);
   border:1px solid var(--line); border-radius:18px; padding:14px; margin-bottom:12px;
   box-shadow:0 18px 40px rgba(0,0,0,.32);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 .card h2{font-family:"Cormorant Garamond",serif;font-size:22px;margin:0 0 8px}
 .special{
@@ -96,6 +105,10 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 </style>
 </head>
 <body>
+<video class="bg-video" autoplay muted loop playsinline poster="img/logo.png" aria-hidden="true">
+  <source src="img/menu_bg.mp4" type="video/mp4" />
+</video>
+<div class="bg-scrim" aria-hidden="true"></div>
 <div class="wrap">
   <header class="hero">
     <img class="logo" src="img/logo.png" alt="Frost & Flame logo" />
