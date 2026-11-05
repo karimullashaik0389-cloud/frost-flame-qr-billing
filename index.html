@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Frost & Flame — Your Bill</title>
+  <meta name="description" content="Sample QR bill for Frost & Flame (Tark Limited). Prototype only — no customer data is stored." />
+  <style>
+    :root {
+      --bg: #0f0a08;
+      --card: #1a1210;
+      --ink: #fff8f2;
+      --muted: #c9b5a6;
+      --line: #3a2a24;
+      --flame: #e85d04;
+      --frost: #7dd3fc;
+      --ok: #22c55e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(232,93,4,.25), transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, rgba(125,211,252,.18), transparent 50%),
+        var(--bg);
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px 40px;
+    }
+    .wrap { width: 100%; max-width: 420px; }
+    .brand {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--frost);
+      border: 1px solid rgba(125,211,252,.35);
+      border-radius: 999px;
+      padding: 4px 10px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+    }
+    .sub {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 40%), var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 18px 18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .meta strong { color: var(--ink); display: block; font-size: 14px; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left;
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 600;
+      padding-bottom: 8px;
+    }
+    th:last-child, td:last-child { text-align: right; }
+    td {
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+      vertical-align: top;
+      font-size: 15px;
+    }
+    .item-name { font-weight: 600; }
+    .item-note { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; font-weight: 400; }
+    .totals { margin-top: 8px; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .row.total {
+      margin-top: 6px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 750;
+    }
+    .pay {
+      display: block;
+      width: 100%;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 14px;
+      padding: 15px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a0f0a;
+      background: linear-gradient(135deg, #ff9f1c, var(--flame));
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(232,93,4,.35);
+    }
+    .pay:active { transform: translateY(1px); }
+    .pay:disabled { opacity: .7; cursor: default; }
+    .note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+    }
+    .ok {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.35);
+      color: #bbf7d0;
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .ok.show { display: block; }
+    footer {
+      margin-top: 18px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="badge">Prototype · no data stored</div>
+      <h1>Frost &amp; Flame</h1>
+      <p class="sub">Tark Limited · 194 Hackney Road, London E2 7QL</p>
+    </div>
+
+    <div class="card">
+      <div class="meta">
+        <div>
+          Table
+          <strong id="tableNo">Table 4</strong>
+        </div>
+        <div style="text-align:right">
+          Bill
+          <strong id="billNo">FF-SAMPLE-001</strong>
+        </div>
+      </div>
+
+      <table aria-label="Bill items">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span class="item-name">Stone Ice Cream</span>
+              <span class="item-note">Mint Choc Chip · rolled fresh</span>
+            </td>
+            <td>2</td>
+            <td>£7.50</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="item-name">Masala Chai</span>
+              <span class="item-note">Hot · medium sweet</span>
+            </td>
+            <td>1</td>
+            <td>£3.50</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="totals">
+        <div class="row"><span>Subtotal</span><span>£18.50</span></div>
+        <div class="row"><span>Service</span><span>£0.00</span></div>
+        <div class="row total"><span>Total</span><span>£18.50</span></div>
+      </div>
+
+      <button class="pay" id="payBtn" type="button">Pay online · £18.50</button>
+      <div class="ok" id="paidMsg">Prototype only — payment is simulated. No card details were taken and nothing was saved.</div>
+      <p class="note">This is a free demo bill page. It does not store names, phone numbers, or card details.</p>
+    </div>
+
+    <footer>
+      Sample layout for owner training · Frost &amp; Flame<br />
+      Real payments can later connect to SumUp, Stripe, or your bank pay link.
+    </footer>
+  </div>
+
+  <script>
+    // Read table / bill from URL so one page can serve many tables without storing data.
+    // Example: bill.html?table=7&bill=FF-1042
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var table = params.get('table');
+      var bill = params.get('bill');
+      if (table) document.getElementById('tableNo').textContent = 'Table ' + table;
+      if (bill) document.getElementById('billNo').textContent = bill;
+      document.getElementById('payBtn').addEventListener('click', function () {
+        this.disabled = true;
+        this.textContent = 'Paid (demo)';
+        document.getElementById('paidMsg').classList.add('show');
+      });
+    })();
+  </script>
+</body>
+</html>
