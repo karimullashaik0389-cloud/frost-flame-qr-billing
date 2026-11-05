@@ -130,6 +130,15 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     <div class="card">
       <h2>Menu</h2>
       <div class="menu-item">
+        <img src="img/mutton_pulav.jpg" alt="Mutton pulav" />
+        <div>
+          <h3>Mutton Pulav</h3>
+          <p>Bone-in mutton · fragrant rice · green chilli</p>
+          <div class="qty"><button type="button" data-add="pulav">+</button><span id="q-pulav">0</span><button type="button" data-sub="pulav">−</button></div>
+        </div>
+        <div class="price">£9.99</div>
+      </div>
+      <div class="menu-item">
         <img src="img/stone.jpg" alt="Stone ice cream" />
         <div>
           <h3>Stone Ice Cream</h3>
@@ -242,6 +251,7 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 (function () {
   var MENU = {
     weekend: { name: 'Chai Affogato Stone', note: 'Weekend limited', price: 8.5, qtyId: 'q-weekend' },
+    pulav: { name: 'Mutton Pulav', note: 'Bone-in · fragrant rice', price: 9.99, qtyId: 'q-pulav' },
     stone: { name: 'Stone Ice Cream', note: 'Mint Choc Chip', price: 7.5, qtyId: 'q-stone' },
     pistachio: { name: 'Pistachio Stone', note: 'Crushed nuts', price: 7.9, qtyId: 'q-pistachio' },
     mango: { name: 'Chilli Mango', note: 'Sweet heat', price: 7.9, qtyId: 'q-mango' },
@@ -250,7 +260,7 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     lassi: { name: 'Frost Lassi', note: 'Cool yoghurt', price: 4.2, qtyId: 'q-lassi' },
     gulab: { name: 'Gulab Bite', note: 'Warm syrup', price: 4.8, qtyId: 'q-gulab' }
   };
-  var qty = { weekend:0, stone:2, pistachio:0, mango:0, chaat:0, chai:1, lassi:0, gulab:0 };
+  var qty = { weekend:0, pulav:0, stone:2, pistachio:0, mango:0, chaat:0, chai:1, lassi:0, gulab:0 };
   var params = new URLSearchParams(location.search);
   var table = params.get('table') || '4';
   var bill = params.get('bill') || ('FF-' + String(1000 + Number(table)).slice(-4));
