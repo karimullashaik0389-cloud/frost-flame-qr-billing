@@ -102,6 +102,55 @@ td{padding:9px 0;border-top:1px solid var(--line);font-size:14px;vertical-align:
 footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-height:1.5}
 .hidden{display:none !important}
 .off{opacity:.45}
+
+/* Unlock a Deal */
+.ff-deal-open{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; min-height:48px; margin:0 0 12px; padding:12px 14px;
+  border-radius:14px; cursor:pointer; font:inherit; font-weight:700;
+  color:#1a0a00; border:2px solid rgba(255,237,213,.9);
+  background:linear-gradient(135deg,#ffd27a,#ff6a1a 55%,#c2410c);
+  box-shadow:0 8px 22px rgba(255,106,26,.35);
+}
+.ff-deal-open .ic{font-size:18px}
+.ff-deal-modal{
+  position:fixed; inset:0; z-index:95; background:rgba(0,0,0,.72);
+  display:flex; align-items:flex-end; justify-content:center; padding:12px;
+}
+.ff-deal-modal.hidden{display:none !important}
+.ff-deal-sheet{
+  width:min(460px,100%); max-height:88vh; overflow:auto;
+  background:var(--card,#16100e); border:1px solid var(--line); border-radius:18px 18px 12px 12px;
+  padding:16px 14px 20px; position:relative;
+}
+.ff-deal-box h3{margin:0 0 6px; font-size:20px; font-family:"Cormorant Garamond",serif}
+.ff-deal-placeholder,.ff-deal-box .note{font-size:12px; color:var(--muted); line-height:1.4}
+.ff-deal-list{display:grid; gap:8px; margin-top:12px}
+.ff-deal-card{
+  text-align:left; width:100%; min-height:56px; padding:12px 14px; border-radius:12px;
+  border:1px solid var(--line); background:rgba(255,255,255,.05); color:var(--ink);
+  font:inherit; cursor:pointer;
+}
+.ff-deal-card b{display:block; font-size:14px}
+.ff-deal-card span{display:block; font-size:11px; color:var(--muted); margin-top:3px}
+.ff-deal-back{border:0; background:transparent; color:var(--muted); font:inherit; font-weight:600; cursor:pointer; margin:0 0 8px; padding:6px 0}
+.ff-deal-label{display:block; font-size:12px; color:var(--muted); margin:8px 0 4px}
+.ff-deal-code{padding:12px; border-radius:12px; border:1px solid rgba(244,194,122,.4); background:rgba(244,194,122,.1); margin-top:10px}
+.ff-deal-code code{font-size:16px; font-weight:700; color:var(--gold); letter-spacing:.04em}
+.ff-deal-fail{color:#fb7185; font-size:14px; line-height:1.45}
+#ffDealGuess.ff-input, .ff-deal-box .ff-input{
+  width:100%; padding:12px; border-radius:12px; border:1px solid var(--line);
+  background:rgba(0,0,0,.3); color:var(--ink); font:inherit; margin-bottom:8px;
+}
+/* Hide plaintext scratch prize codes on this preview branch — use Unlock a Deal instead */
+#scratchCard.ff-scratch-hidden-codes .scratch-prize strong,
+#scratchCard.ff-scratch-hidden-codes .scratch-prize #scratchCode,
+.ff-scratch-hidden-codes #scratchCode,
+.ff-scratch-hidden-codes #prizeCode{ display:none !important; }
+.ff-scratch-hidden-codes .scratch-prize::after{
+  content:"Use Unlock a Deal for discount codes";
+  display:block; margin-top:8px; font-size:12px; color:var(--muted);
+}
 </style>
 <link rel="stylesheet" href="css/themes.css" />
 </head>
@@ -121,6 +170,14 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     <div class="ff-who-grid" id="ffWhoGrid"></div>
   </div>
 </div>
+
+<div class="ff-deal-modal hidden" id="ffDealModal" data-testid="ff-deal-modal" role="dialog" aria-modal="true" aria-label="Unlock a Deal">
+  <div class="ff-deal-sheet">
+    <button class="ff-games-close" id="ffDealClose" type="button" aria-label="Close deals">×</button>
+    <div id="ffDealHost"></div>
+  </div>
+</div>
+
 <div class="ff-games-dock" id="ffGamesDock" aria-live="polite">
   <button class="ff-games-close" id="ffGamesClose" type="button" aria-label="Close">×</button>
   <h3>While you wait…</h3>
@@ -264,9 +321,14 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
       <div class="label">While you wait · interesting bite</div>
       <div class="fact" id="ffFactText">Stone ice cream is rolled fresh on a frozen plate.</div>
     </div>
-    <div class="card">
+    
+<button type="button" class="ff-deal-open" id="ffDealOpen" data-testid="ff-deal-open" aria-label="Unlock a Deal">
+  <span class="ic" aria-hidden="true">🔐</span>
+  <span>Unlock a Deal</span>
+</button>
+<div class="card">
       <h2>Scratch &amp; win</h2>
-      <p class="sub" style="margin:0 0 10px">Scratch the foil for a table offer. One card per bill. Show your code to staff to redeem.</p>
+      <p class="sub" style="margin:0 0 10px">Scratch for a playful foil reveal. Discount codes now unlock via <strong>Unlock a Deal</strong> above (no plain codes shown here).</p>
       <div class="scratch-wrap" id="scratchWrap">
         <div class="scratch-prize">
           <strong id="prizeText">…</strong>
@@ -317,6 +379,7 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 <script src="js/api.js"></script>
 <script src="js/themes.js"></script>
 <script src="js/games.js"></script>
+<script src="js/deals.js"></script>
 <script src="js/experience.js"></script>
 <script>
 (function () {
