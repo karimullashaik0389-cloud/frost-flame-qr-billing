@@ -1,0 +1,16 @@
+Frost & Flame QR Menu + Bill — owner notes
+==========================================
+
+Customer page:
+  https://karimullashaik0389-cloud.github.io/frost-flame-qr-billing/?table=N
+
+Staff admin:
+  https://karimullashaik0389-cloud.github.io/frost-flame-qr-billing/admin.html
+
+Backend spreadsheet:
+  https://docs.google.com/spreadsheets/d/1MJXSMHAB5EqHMkyLoFH26K3fx0gE5ISsXcEaC_u1vsI/edit
+
+One-time API deploy: see api/DEPLOY.md
+Then set js/config.js FF_API_URL to the Web App /exec URL.
+
+Credentials for the owner login are kept outside git in the bot store.

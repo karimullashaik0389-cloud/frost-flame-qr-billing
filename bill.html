@@ -220,15 +220,17 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 
     <div class="card">
       <h2>Scratch &amp; win</h2>
-      <p class="sub" style="margin:0 0 10px">Scratch the foil for a random table offer. Result stays on your phone only.</p>
+      <p class="sub" style="margin:0 0 10px">Scratch the foil for a table offer. One card per bill. Show your code to staff to redeem.</p>
       <div class="scratch-wrap" id="scratchWrap">
         <div class="scratch-prize">
           <strong id="prizeText">…</strong>
           <span id="prizeSub">Show this screen to staff</span>
+          <span id="prizeCode" style="display:block;margin-top:8px;font-size:13px;letter-spacing:.12em;color:var(--frost)"></span>
         </div>
         <canvas id="scratchCanvas" width="800" height="300"></canvas>
       </div>
-      <button class="btn btn-ghost" id="resetScratch" type="button">New scratch card</button>
+      <button class="btn btn-ghost hidden" id="resetScratch" type="button">New scratch card</button>
+      <p class="note" id="scratchNote" style="text-align:left"></p>
     </div>
   </section>
 
@@ -260,18 +262,20 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 </div>
 <div class="toast" id="toast"></div>
 
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
 <script>
 (function () {
   var MENU = {
-    weekend: { name: 'Chai Affogato Stone', note: 'Weekend limited', price: 8.5, qtyId: 'q-weekend' },
-    pulav: { name: 'Mutton Pulav', note: 'Bone-in · fragrant rice', price: 9.99, qtyId: 'q-pulav' },
-    stone: { name: 'Stone Ice Cream', note: 'Mint Choc Chip', price: 7.5, qtyId: 'q-stone' },
-    pistachio: { name: 'Pistachio Stone', note: 'Crushed nuts', price: 7.9, qtyId: 'q-pistachio' },
-    mango: { name: 'Chilli Mango', note: 'Sweet heat', price: 7.9, qtyId: 'q-mango' },
-    chaat: { name: 'Flame Chaat', note: 'Street-style', price: 6.5, qtyId: 'q-chaat' },
-    chai: { name: 'Masala Chai', note: 'Hot · medium sweet', price: 3.5, qtyId: 'q-chai' },
-    lassi: { name: 'Frost Lassi', note: 'Cool yoghurt', price: 4.2, qtyId: 'q-lassi' },
-    gulab: { name: 'Gulab Bite', note: 'Warm syrup', price: 4.8, qtyId: 'q-gulab' }
+    weekend: { name: 'Chai Affogato Stone', note: 'Weekend limited', price: 8.5, qtyId: 'q-weekend', special: 'weekend' },
+    pulav: { name: 'Mutton Pulav', note: 'Bone-in · fragrant rice', price: 9.99, qtyId: 'q-pulav', special: '' },
+    stone: { name: 'Stone Ice Cream', note: 'Mint Choc Chip', price: 7.5, qtyId: 'q-stone', special: '' },
+    pistachio: { name: 'Pistachio Stone', note: 'Crushed nuts', price: 7.9, qtyId: 'q-pistachio', special: '' },
+    mango: { name: 'Chilli Mango', note: 'Sweet heat', price: 7.9, qtyId: 'q-mango', special: '' },
+    chaat: { name: 'Flame Chaat', note: 'Street-style', price: 6.5, qtyId: 'q-chaat', special: '' },
+    chai: { name: 'Masala Chai', note: 'Hot · medium sweet', price: 3.5, qtyId: 'q-chai', special: '' },
+    lassi: { name: 'Frost Lassi', note: 'Cool yoghurt', price: 4.2, qtyId: 'q-lassi', special: '' },
+    gulab: { name: 'Gulab Bite', note: 'Warm syrup', price: 4.8, qtyId: 'q-gulab', special: '' }
   };
   var qty = { weekend:0, pulav:0, stone:2, pistachio:0, mango:0, chaat:0, chai:1, lassi:0, gulab:0 };
   var params = new URLSearchParams(location.search);
@@ -310,11 +314,19 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     document.getElementById('total').textContent = money(sum);
   }
 
-  document.querySelectorAll('[data-add]').forEach(function(btn){
-    btn.addEventListener('click', function(){ var k=btn.getAttribute('data-add'); qty[k]=(qty[k]||0)+1; renderQty(); renderBill(); });
-  });
-  document.querySelectorAll('[data-sub]').forEach(function(btn){
-    btn.addEventListener('click', function(){ var k=btn.getAttribute('data-sub'); qty[k]=Math.max(0,(qty[k]||0)-1); renderQty(); renderBill(); });
+  // Event delegation so live menu rebuilds keep working
+  document.getElementById('panelMenu').addEventListener('click', function(e){
+    var add = e.target.closest('[data-add]');
+    var sub = e.target.closest('[data-sub]');
+    if (add) {
+      var k = add.getAttribute('data-add');
+      if (add.disabled) return;
+      qty[k]=(qty[k]||0)+1; renderQty(); renderBill();
+    } else if (sub) {
+      var k2 = sub.getAttribute('data-sub');
+      if (sub.disabled) return;
+      qty[k2]=Math.max(0,(qty[k2]||0)-1); renderQty(); renderBill();
+    }
   });
 
   function showTab(which){
@@ -352,15 +364,15 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
       var daysToSun = (7 - day) % 7;
       target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToSun, 23, 59, 59);
       note.textContent = 'Order before the timer hits zero — special ends Sunday night.';
-      document.querySelectorAll('[data-add="weekend"],[data-sub="weekend"]').forEach(function(b){ b.disabled=false; });
+      document.querySelectorAll('#weekendCard [data-add],#weekendCard [data-sub]').forEach(function(b){ b.disabled=false; });
       document.getElementById('weekendCard').classList.remove('off');
     } else {
       badge.textContent = 'Opens Friday';
       var daysToFri = (5 - day + 7) % 7;
       target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToFri, 0, 0, 0);
       note.textContent = 'Weekend special is locked until Friday. Countdown to open.';
-      qty.weekend = 0;
-      document.querySelectorAll('[data-add="weekend"],[data-sub="weekend"]').forEach(function(b){ b.disabled=true; });
+      Object.keys(MENU).forEach(function(k){ if (MENU[k].special === 'weekend' || k === 'weekend') qty[k]=0; });
+      document.querySelectorAll('#weekendCard [data-add],#weekendCard [data-sub]').forEach(function(b){ b.disabled=true; });
       document.getElementById('weekendCard').classList.add('off');
     }
     var diff = Math.max(0, target - now);
@@ -373,8 +385,8 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
   updateWeekend();
   setInterval(updateWeekend, 1000);
 
-  // Scratch card
-  var prizes = [
+  // Scratch card — server pool when API is live; local random fallback otherwise
+  var fallbackPrizes = [
     { t: '10% off drinks', s: 'Valid on this table today' },
     { t: 'Free Masala Chai', s: 'One cup with any stone dessert' },
     { t: '£2 off bill', s: 'Show staff before paying' },
@@ -384,6 +396,7 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
   ];
   var canvas = document.getElementById('scratchCanvas');
   var ctx = canvas.getContext('2d');
+  var serverScratch = false;
   function sizeCanvas(){
     var wrap = document.getElementById('scratchWrap');
     var w = wrap.clientWidth, h = wrap.clientHeight;
@@ -401,10 +414,18 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     ctx.textAlign = 'center';
     ctx.fillText('Scratch here for your offer', canvas.width/4, canvas.height/4);
   }
-  function pickPrize(){
-    var p = prizes[Math.floor(Math.random()*prizes.length)];
-    document.getElementById('prizeText').textContent = p.t;
-    document.getElementById('prizeSub').textContent = p.s;
+  function showPrize(title, sub, code){
+    document.getElementById('prizeText').textContent = title;
+    document.getElementById('prizeSub').textContent = sub;
+    var codeEl = document.getElementById('prizeCode');
+    if (code) { codeEl.textContent = 'Code ' + code; codeEl.style.display = 'block'; }
+    else { codeEl.textContent = ''; }
+  }
+  function pickFallbackPrize(){
+    var p = fallbackPrizes[Math.floor(Math.random()*fallbackPrizes.length)];
+    showPrize(p.t, p.s, '');
+    document.getElementById('scratchNote').textContent = 'Offline demo card — not redeemable.';
+    document.getElementById('resetScratch').classList.remove('hidden');
   }
   function scratch(x,y){
     ctx.globalCompositeOperation = 'destination-out';
@@ -423,14 +444,96 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
   canvas.addEventListener('touchstart', function(e){ e.preventDefault(); drawing=true; var p=pos(e); scratch(p.x,p.y); }, {passive:false});
   canvas.addEventListener('touchmove', function(e){ e.preventDefault(); if(!drawing) return; var p=pos(e); scratch(p.x,p.y); }, {passive:false});
   canvas.addEventListener('touchend', function(){ drawing=false; });
-  document.getElementById('resetScratch').onclick = function(){ pickPrize(); paintFoil(); };
-  pickPrize(); paintFoil();
+  document.getElementById('resetScratch').onclick = function(){
+    if (serverScratch) return;
+    pickFallbackPrize(); paintFoil();
+  };
+  function initScratch(){
+    if (!window.FFApi || !FFApi.ready()) {
+      pickFallbackPrize(); paintFoil(); return;
+    }
+    FFApi.call({ action:'scratch', billId: bill, table: table }).then(function(r){
+      serverScratch = true;
+      var p = r.prize || {};
+      showPrize(p.title || '…', p.subtitle || 'Show staff', p.code || '');
+      document.getElementById('scratchNote').textContent = r.already
+        ? 'Already drawn for this bill — show the code to staff.'
+        : 'One card for this bill. Staff can verify the code before discount.';
+      document.getElementById('resetScratch').classList.add('hidden');
+      paintFoil();
+    }).catch(function(){
+      pickFallbackPrize(); paintFoil();
+    });
+  }
+  initScratch();
   window.addEventListener('resize', function(){ paintFoil(); });
 
   function toast(msg){
     var el = document.getElementById('toast');
     el.textContent = msg; el.classList.add('show');
     setTimeout(function(){ el.classList.remove('show'); }, 4200);
+  }
+
+  // Live menu from backend (fallback = hardcoded MENU + HTML already on page)
+  function applyLiveMenu(items){
+    if (!items || !items.length) return;
+    var next = {};
+    var qtyKeep = qty;
+    items.forEach(function(it){
+      next[it.id] = {
+        name: it.name,
+        note: it.note || '',
+        price: Number(it.price) || 0,
+        qtyId: 'q-' + it.id,
+        image: it.image || '',
+        special: it.special || ''
+      };
+      if (typeof qtyKeep[it.id] !== 'number') qtyKeep[it.id] = 0;
+    });
+    // rebuild menu list (non-weekend cards)
+    var listCard = document.querySelector('#panelMenu .card:not(.special)');
+    if (!listCard) return;
+    var weekend = items.filter(function(i){ return i.special === 'weekend'; })[0];
+    var regular = items.filter(function(i){ return i.special !== 'weekend'; });
+    if (weekend) {
+      var wc = document.getElementById('weekendCard');
+      if (wc) {
+        wc.classList.remove('hidden');
+        var img = wc.querySelector('img'); if (img && weekend.image) img.src = weekend.image;
+        var h2 = wc.querySelector('h2'); if (h2) h2.textContent = weekend.name;
+        var price = wc.querySelector('.price'); if (price) price.textContent = '£' + Number(weekend.price).toFixed(2);
+        var q = document.getElementById('q-weekend');
+        if (q) { q.id = 'q-' + weekend.id; }
+        wc.querySelectorAll('[data-add],[data-sub]').forEach(function(b){
+          if (b.hasAttribute('data-add')) b.setAttribute('data-add', weekend.id);
+          if (b.hasAttribute('data-sub')) b.setAttribute('data-sub', weekend.id);
+        });
+      }
+    }
+    var html = '<h2>Menu</h2>' + regular.map(function(it){
+      return '<div class="menu-item">'+
+        '<img src="'+escAttr(it.image||'img/logo.png')+'" alt="" />'+
+        '<div><h3>'+escHtml(it.name)+'</h3><p>'+escHtml(it.note||'')+'</p>'+
+        '<div class="qty"><button type="button" data-add="'+escAttr(it.id)+'">+</button>'+
+        '<span id="q-'+escAttr(it.id)+'">'+(qtyKeep[it.id]||0)+'</span>'+
+        '<button type="button" data-sub="'+escAttr(it.id)+'">−</button></div></div>'+
+        '<div class="price">£'+Number(it.price).toFixed(2)+'</div></div>';
+    }).join('') +
+    '<button class="btn btn-primary" id="toBillBtn" type="button">Add to bill · continue</button>'+
+    '<p class="note">Quantities stay only on this phone until you close the page. Nothing is uploaded.</p>';
+    listCard.innerHTML = html;
+    MENU = next;
+    qty = qtyKeep;
+    var toBill = document.getElementById('toBillBtn');
+    if (toBill) toBill.onclick = function(){ renderBill(); showTab('bill'); };
+    renderQty(); renderBill();
+  }
+  function escHtml(s){ return String(s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);}); }
+  function escAttr(s){ return escHtml(s).replace(/`/g,''); }
+  if (window.FFApi && FFApi.ready()) {
+    FFApi.call({ action:'menu' }).then(function(r){
+      if (r && r.items) applyLiveMenu(r.items);
+    }).catch(function(){ /* keep hardcoded fallback */ });
   }
 
   document.getElementById('orderBtn').onclick = function(){

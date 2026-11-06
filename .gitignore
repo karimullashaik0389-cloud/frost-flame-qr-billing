@@ -1,3 +1,6 @@
-.venv/
+
 *.pyc
+.venv/
 __pycache__/
+_seed_batches/
+_seed_scratch.json

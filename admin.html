@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex" />
+<title>Frost & Flame — Staff Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<style>
+:root{--bg:#0b0706;--card:#16100e;--ink:#fff7f0;--muted:#cbb5a6;--line:#3a2a24;--flame:#e85d04;--gold:#f4c27a;--ok:#22c55e;--danger:#fb7185}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:12px;margin:0 0 14px}
+.card{background:rgba(22,16,14,.95);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h2{font-size:16px;margin:0 0 10px}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px}
+input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font:inherit}
+textarea{min-height:64px}
+.btn{display:inline-block;width:100%;margin-top:10px;border:0;border-radius:12px;padding:13px;font-weight:700;font:inherit;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,#ff9f1c,var(--flame));color:#1a0f0a}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--line)}
+.btn-danger{background:rgba(251,113,133,.15);color:var(--danger);border:1px solid rgba(251,113,133,.35)}
+.btn.sm{width:auto;padding:8px 12px;margin:0;font-size:13px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0;padding-bottom:4px}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.tab.on{background:var(--flame);color:#1a0f0a;border-color:transparent}
+.panel{display:none}.panel.on{display:block}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.item{border-top:1px solid var(--line);padding:10px 0}
+.item:first-child{border-top:0;padding-top:0}
+.item b{display:block}
+.muted{color:var(--muted);font-size:12px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(120%);background:#111;border:1px solid rgba(34,197,94,.4);color:#bbf7d0;padding:10px 12px;border-radius:10px;width:min(420px,92vw);font-size:13px;transition:.3s;z-index:20}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{border-color:rgba(251,113,133,.5);color:#fecdd3}
+.badge{display:inline-block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.badge.ok{color:#86efac;border-color:rgba(34,197,94,.4)}
+.badge.warn{color:#fde68a;border-color:rgba(244,194,122,.45)}
+.hidden{display:none!important}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.warnbox{background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.35);color:#fecdd3;padding:10px 12px;border-radius:12px;font-size:13px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="setupWarn" class="warnbox hidden">API not connected yet. Deploy the Apps Script (see api/DEPLOY.md) and set FF_API_URL in js/config.js.</div>
+
+  <section id="loginView" class="card">
+    <h1>Staff login</h1>
+    <p class="sub">Frost &amp; Flame · phone-friendly admin</p>
+    <label>Username</label>
+    <input id="loginUser" autocomplete="username" autocapitalize="off" />
+    <label>Password</label>
+    <input id="loginPass" type="password" autocomplete="current-password" />
+    <button class="btn btn-primary" id="loginBtn" type="button">Log in</button>
+  </section>
+
+  <section id="appView" class="hidden">
+    <div class="topbar">
+      <div>
+        <h1 style="margin:0;font-size:20px">Staff admin</h1>
+        <p class="sub" style="margin:2px 0 0" id="whoLine"></p>
+      </div>
+      <button class="btn btn-ghost sm" id="logoutBtn" type="button">Log out</button>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-tab="menu" type="button">Menu</button>
+      <button class="tab" data-tab="scratch" type="button">Scratch</button>
+      <button class="tab" data-tab="redeem" type="button">Redeem</button>
+      <button class="tab" data-tab="staff" type="button" id="staffTab">Staff</button>
+      <button class="tab" data-tab="account" type="button">Account</button>
+    </div>
+
+    <div class="panel on" id="panel-menu">
+      <div class="card">
+        <div class="topbar"><h2 style="margin:0">Dishes</h2><button class="btn btn-primary sm" id="addDishBtn" type="button">+ Add</button></div>
+        <div id="menuList"></div>
+      </div>
+      <div class="card hidden" id="dishEditor">
+        <h2 id="dishEditorTitle">Edit dish</h2>
+        <input type="hidden" id="dishId" />
+        <label>Name</label><input id="dishName" />
+        <label>Note / description</label><input id="dishNote" />
+        <label>Price (£)</label><input id="dishPrice" type="number" step="0.01" min="0" />
+        <label>Image URL or path</label><input id="dishImage" placeholder="img/chaat.jpg or https://…" />
+        <label>Sort order</label><input id="dishSort" type="number" step="1" />
+        <label>Special tag</label>
+        <select id="dishSpecial"><option value="">None</option><option value="weekend">Weekend special</option></select>
+        <label>Visible on menu</label>
+        <select id="dishVisible"><option value="true">Yes</option><option value="false">Hidden</option></select>
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-ghost" id="dishCancel" type="button">Cancel</button>
+          <button class="btn btn-primary" id="dishSave" type="button">Save</button>
+        </div>
+        <button class="btn btn-danger" id="dishDelete" type="button">Delete dish</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-scratch">
+      <div class="card">
+        <h2>Scratch card pool</h2>
+        <p class="muted" id="scratchSummary">Loading…</p>
+        <div id="prizeStats" class="muted"></div>
+      </div>
+      <div class="card" id="oddsCard">
+        <h2>Set fixed odds</h2>
+        <p class="muted">Counts must add up to the pool size. Example: 10 × £2 off in a pool of 1000.</p>
+        <label>Pool size</label><input id="poolSize" type="number" min="1" step="1" />
+        <label>Active</label>
+        <select id="scratchActive"><option value="true">On</option><option value="false">Off</option></select>
+        <div id="prizeEditor"></div>
+        <button class="btn btn-ghost" id="addPrizeBtn" type="button">+ Prize row</button>
+        <button class="btn btn-primary" id="saveOddsBtn" type="button">Save odds</button>
+        <button class="btn btn-danger" id="refillBtn" type="button">Refill pool from these odds</button>
+        <p class="muted">Refill replaces unused cards with a new shuffled pool. Already-drawn codes stay in Wins history.</p>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-redeem">
+      <div class="card">
+        <h2>Verify &amp; redeem</h2>
+        <label>Customer code</label>
+        <input id="redeemCode" placeholder="FF-XXXXXX" autocapitalize="characters" />
+        <button class="btn btn-primary" id="verifyBtn" type="button">Check code</button>
+        <div id="redeemResult" class="muted" style="margin-top:10px"></div>
+        <button class="btn btn-primary hidden" id="redeemBtn" type="button">Mark as used</button>
+      </div>
+      <div class="card">
+        <h2>Recent wins</h2>
+        <div id="winsList" class="muted">—</div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-staff">
+      <div class="card">
+        <div class="topbar"><h2 style="margin:0">Staff accounts</h2><button class="btn btn-primary sm" id="addStaffBtn" type="button">+ Add</button></div>
+        <div id="staffList"></div>
+      </div>
+      <div class="card hidden" id="staffEditor">
+        <h2>Staff</h2>
+        <label>Username</label><input id="staffUser" autocapitalize="off" />
+        <label>Display name</label><input id="staffName" />
+        <label>Role</label>
+        <select id="staffRole"><option value="staff">Staff</option><option value="owner">Owner</option></select>
+        <label>Active</label>
+        <select id="staffActive"><option value="true">Yes</option><option value="false">No</option></select>
+        <label>Password (set/change)</label><input id="staffPass" type="password" placeholder="Leave blank to keep" />
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-ghost" id="staffCancel" type="button">Cancel</button>
+          <button class="btn btn-primary" id="staffSave" type="button">Save</button>
+        </div>
+        <button class="btn btn-danger" id="staffDelete" type="button">Remove staff</button>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-account">
+      <div class="card">
+        <h2>Change my password</h2>
+        <label>New password</label><input id="newPass" type="password" />
+        <button class="btn btn-primary" id="changePassBtn" type="button">Update password</button>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(function(){
+  var token = localStorage.getItem('ff_token') || '';
+  var me = null;
+  try { me = JSON.parse(localStorage.getItem('ff_user') || 'null'); } catch(e){}
+  var editingDish = null;
+  var editingStaff = null;
+  var pendingRedeem = null;
+
+  function toast(msg, err){
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.toggle('err', !!err);
+    el.classList.add('show');
+    setTimeout(function(){ el.classList.remove('show'); }, 3200);
+  }
+  function api(payload){
+    payload = payload || {};
+    if (token) payload.token = token;
+    return FFApi.call(payload);
+  }
+  function showLogin(){
+    document.getElementById('loginView').classList.remove('hidden');
+    document.getElementById('appView').classList.add('hidden');
+  }
+  function showApp(){
+    document.getElementById('loginView').classList.add('hidden');
+    document.getElementById('appView').classList.remove('hidden');
+    document.getElementById('whoLine').textContent = (me.displayName || me.username) + ' · ' + me.role;
+    document.getElementById('staffTab').style.display = me.role === 'owner' ? '' : 'none';
+    document.getElementById('oddsCard').style.display = me.role === 'owner' ? '' : 'none';
+  }
+
+  if (!FFApi.ready()) document.getElementById('setupWarn').classList.remove('hidden');
+
+  document.getElementById('loginBtn').onclick = function(){
+    if (!FFApi.ready()) { toast('API URL not set yet', true); return; }
+    api({ action:'login', username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value })
+      .then(function(r){
+        token = r.token; me = r.user;
+        localStorage.setItem('ff_token', token);
+        localStorage.setItem('ff_user', JSON.stringify(me));
+        showApp(); loadMenu(); loadScratch(); loadWins();
+        toast('Logged in');
+      }).catch(function(e){ toast(e.message || 'Login failed', true); });
+  };
+  document.getElementById('logoutBtn').onclick = function(){
+    api({ action:'logout' }).catch(function(){});
+    token = ''; me = null;
+    localStorage.removeItem('ff_token'); localStorage.removeItem('ff_user');
+    showLogin();
+  };
+
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.onclick = function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.classList.remove('on'); });
+      document.querySelectorAll('.panel').forEach(function(x){ x.classList.remove('on'); });
+      t.classList.add('on');
+      document.getElementById('panel-' + t.getAttribute('data-tab')).classList.add('on');
+      if (t.getAttribute('data-tab') === 'menu') loadMenu();
+      if (t.getAttribute('data-tab') === 'scratch') loadScratch();
+      if (t.getAttribute('data-tab') === 'redeem') loadWins();
+      if (t.getAttribute('data-tab') === 'staff') loadStaff();
+    };
+  });
+
+  function loadMenu(){
+    api({ action:'menuList' }).then(function(r){
+      var box = document.getElementById('menuList');
+      box.innerHTML = r.items.map(function(it){
+        return '<div class="item"><b>'+esc(it.name)+' · £'+Number(it.price).toFixed(2)+'</b>'+
+          '<span class="muted">'+esc(it.note||'')+'</span> '+
+          (it.visible?'<span class="badge ok">Live</span>':'<span class="badge">Hidden</span>')+
+          ' <button class="btn btn-ghost sm" data-edit="'+esc(it.id)+'" type="button">Edit</button></div>';
+      }).join('') || '<p class="muted">No dishes</p>';
+      box.querySelectorAll('[data-edit]').forEach(function(b){
+        b.onclick = function(){
+          var it = r.items.find(function(x){ return x.id === b.getAttribute('data-edit'); });
+          openDish(it);
+        };
+      });
+    }).catch(function(e){ toast(e.message, true); });
+  }
+  function openDish(it){
+    editingDish = it || { id:'', name:'', note:'', price:0, image:'', sort:99, special:'', visible:true };
+    document.getElementById('dishEditor').classList.remove('hidden');
+    document.getElementById('dishEditorTitle').textContent = it ? 'Edit dish' : 'Add dish';
+    document.getElementById('dishId').value = editingDish.id || '';
+    document.getElementById('dishName').value = editingDish.name || '';
+    document.getElementById('dishNote').value = editingDish.note || '';
+    document.getElementById('dishPrice').value = editingDish.price || '';
+    document.getElementById('dishImage').value = editingDish.image || '';
+    document.getElementById('dishSort').value = editingDish.sort || 99;
+    document.getElementById('dishSpecial').value = editingDish.special || '';
+    document.getElementById('dishVisible').value = editingDish.visible === false ? 'false' : 'true';
+    document.getElementById('dishDelete').style.display = it && it.id ? '' : 'none';
+  }
+  document.getElementById('addDishBtn').onclick = function(){ openDish(null); };
+  document.getElementById('dishCancel').onclick = function(){ document.getElementById('dishEditor').classList.add('hidden'); };
+  document.getElementById('dishSave').onclick = function(){
+    var item = {
+      id: document.getElementById('dishId').value,
+      name: document.getElementById('dishName').value,
+      note: document.getElementById('dishNote').value,
+      price: parseFloat(document.getElementById('dishPrice').value || '0'),
+      image: document.getElementById('dishImage').value,
+      sort: parseInt(document.getElementById('dishSort').value || '99', 10),
+      special: document.getElementById('dishSpecial').value,
+      visible: document.getElementById('dishVisible').value === 'true'
+    };
+    api({ action:'menuSave', item:item }).then(function(){
+      toast('Saved'); document.getElementById('dishEditor').classList.add('hidden'); loadMenu();
+    }).catch(function(e){ toast(e.message, true); });
+  };
+  document.getElementById('dishDelete').onclick = function(){
+    if (!confirm('Delete this dish?')) return;
+    api({ action:'menuDelete', id: document.getElementById('dishId').value }).then(function(){
+      toast('Deleted'); document.getElementById('dishEditor').classList.add('hidden'); loadMenu();
+    }).catch(function(e){ toast(e.message, true); });
+  };
+
+  function renderPrizeEditor(prizes){
+    var box = document.getElementById('prizeEditor');
+    box.innerHTML = (prizes || []).map(function(p, i){
+      return '<div class="item" data-pi="'+i+'">'+
+        '<label>Prize id</label><input data-f="id" value="'+esc(p.id)+'" />'+
+        '<label>Title</label><input data-f="title" value="'+esc(p.title)+'" />'+
+        '<label>Subtitle</label><input data-f="subtitle" value="'+esc(p.subtitle)+'" />'+
+        '<label>Count in pool</label><input data-f="count" type="number" min="0" value="'+(p.count||0)+'" />'+
+        '</div>';
+    }).join('');
+  }
+  function readPrizeEditor(){
+    return Array.prototype.map.call(document.querySelectorAll('#prizeEditor .item'), function(el){
+      return {
+        id: el.querySelector('[data-f=id]').value.trim(),
+        title: el.querySelector('[data-f=title]').value.trim(),
+        subtitle: el.querySelector('[data-f=subtitle]').value.trim(),
+        count: parseInt(el.querySelector('[data-f=count]').value || '0', 10)
+      };
+    });
+  }
+  function loadScratch(){
+    api({ action:'scratchStatus' }).then(function(r){
+      document.getElementById('scratchSummary').textContent =
+        'Pool ' + r.poolSize + ' · available ' + r.available + ' · drawn ' + r.drawn +
+        ' · next #' + r.nextCardIndex + (r.active ? '' : ' · OFF');
+      var stats = Object.keys(r.byPrize || {}).map(function(id){
+        var p = r.byPrize[id];
+        return '<div class="item"><b>'+esc(p.title)+'</b><span class="muted">planned '+p.planned+' · left '+p.remaining+' · drawn '+p.drawn+'</span></div>';
+      }).join('');
+      document.getElementById('prizeStats').innerHTML = stats;
+      document.getElementById('poolSize').value = r.poolSize;
+      document.getElementById('scratchActive').value = r.active ? 'true' : 'false';
+      renderPrizeEditor(r.prizes || []);
+    }).catch(function(e){ toast(e.message, true); });
+  }
+  document.getElementById('addPrizeBtn').onclick = function(){
+    var list = readPrizeEditor();
+    list.push({ id:'p'+Date.now().toString(36), title:'New prize', subtitle:'', count:0 });
+    renderPrizeEditor(list);
+  };
+  document.getElementById('saveOddsBtn').onclick = function(){
+    api({
+      action:'scratchConfigSave',
+      poolSize: parseInt(document.getElementById('poolSize').value || '0', 10),
+      active: document.getElementById('scratchActive').value === 'true',
+      prizes: readPrizeEditor()
+    }).then(function(r){ toast(r.note || 'Odds saved'); loadScratch(); })
+      .catch(function(e){ toast(e.message, true); });
+  };
+  document.getElementById('refillBtn').onclick = function(){
+    if (!confirm('Rebuild the whole unused pool from current odds?')) return;
+    api({ action:'scratchRefill' }).then(function(r){ toast('Refilled ' + r.poolSize + ' cards'); loadScratch(); })
+      .catch(function(e){ toast(e.message, true); });
+  };
+
+  document.getElementById('verifyBtn').onclick = function(){
+    var code = document.getElementById('redeemCode').value.trim();
+    api({ action:'verify', code:code }).then(function(r){
+      var box = document.getElementById('redeemResult');
+      var btn = document.getElementById('redeemBtn');
+      pendingRedeem = null;
+      if (!r.found) { box.innerHTML = '<span class="badge warn">Not found</span> No matching code.'; btn.classList.add('hidden'); return; }
+      var w = r.win;
+      pendingRedeem = w;
+      box.innerHTML = '<b>'+esc(w.title)+'</b><br><span class="muted">'+esc(w.subtitle)+'</span><br>'+
+        'Code <b>'+esc(w.code)+'</b> · Table '+esc(w.table||'—')+' · Bill '+esc(w.billId||'—')+'<br>'+
+        (w.status==='redeemed'
+          ? '<span class="badge warn">Already used</span> by '+esc(w.redeemedBy||'')+' at '+esc(w.redeemedAt||'')
+          : (w.prizeId==='pnothing' ? '<span class="badge">No prize</span>' : '<span class="badge ok">Valid — not used yet</span>'));
+      if (w.status !== 'redeemed' && w.prizeId !== 'pnothing') btn.classList.remove('hidden');
+      else btn.classList.add('hidden');
+    }).catch(function(e){ toast(e.message, true); });
+  };
+  document.getElementById('redeemBtn').onclick = function(){
+    if (!pendingRedeem) return;
+    api({ action:'redeem', code: pendingRedeem.code }).then(function(){
+      toast('Marked used'); document.getElementById('redeemBtn').classList.add('hidden'); loadWins();
+      document.getElementById('verifyBtn').click();
+    }).catch(function(e){ toast(e.message, true); });
+  };
+  function loadWins(){
+    api({ action:'winsRecent' }).then(function(r){
+      document.getElementById('winsList').innerHTML = (r.wins||[]).map(function(w){
+        return '<div class="item"><b>'+esc(w.code)+'</b> '+esc(w.title)+
+          ' <span class="badge '+(w.status==='redeemed'?'warn':'ok')+'">'+esc(w.status)+'</span>'+
+          '<div class="muted">Table '+esc(w.table||'—')+' · '+esc(w.drawnAt||'')+'</div></div>';
+      }).join('') || 'No wins yet';
+    }).catch(function(){});
+  }
+
+  function loadStaff(){
+    if (!me || me.role !== 'owner') return;
+    api({ action:'staffList' }).then(function(r){
+      var box = document.getElementById('staffList');
+      box.innerHTML = r.staff.map(function(s){
+        return '<div class="item"><b>'+esc(s.displayName)+'</b> <span class="muted">@'+esc(s.username)+' · '+esc(s.role)+'</span> '+
+          (s.active?'<span class="badge ok">Active</span>':'<span class="badge">Off</span>')+
+          ' <button class="btn btn-ghost sm" data-su="'+esc(s.username)+'" type="button">Edit</button></div>';
+      }).join('');
+      box.querySelectorAll('[data-su]').forEach(function(b){
+        b.onclick = function(){
+          var s = r.staff.find(function(x){ return x.username === b.getAttribute('data-su'); });
+          openStaff(s);
+        };
+      });
+    }).catch(function(e){ toast(e.message, true); });
+  }
+  function openStaff(s){
+    editingStaff = s || { username:'', displayName:'', role:'staff', active:true };
+    document.getElementById('staffEditor').classList.remove('hidden');
+    document.getElementById('staffUser').value = editingStaff.username || '';
+    document.getElementById('staffUser').disabled = !!s;
+    document.getElementById('staffName').value = editingStaff.displayName || '';
+    document.getElementById('staffRole').value = editingStaff.role || 'staff';
+    document.getElementById('staffActive').value = editingStaff.active === false ? 'false' : 'true';
+    document.getElementById('staffPass').value = '';
+    document.getElementById('staffDelete').style.display = s ? '' : 'none';
+  }
+  document.getElementById('addStaffBtn').onclick = function(){ openStaff(null); };
+  document.getElementById('staffCancel').onclick = function(){ document.getElementById('staffEditor').classList.add('hidden'); };
+  document.getElementById('staffSave').onclick = function(){
+    api({ action:'staffSave', user:{
+      username: document.getElementById('staffUser').value,
+      displayName: document.getElementById('staffName').value,
+      role: document.getElementById('staffRole').value,
+      active: document.getElementById('staffActive').value === 'true',
+      password: document.getElementById('staffPass').value
+    }}).then(function(){ toast('Staff saved'); document.getElementById('staffEditor').classList.add('hidden'); loadStaff(); })
+      .catch(function(e){ toast(e.message, true); });
+  };
+  document.getElementById('staffDelete').onclick = function(){
+    if (!confirm('Remove this staff login?')) return;
+    api({ action:'staffDelete', username: document.getElementById('staffUser').value }).then(function(){
+      toast('Removed'); document.getElementById('staffEditor').classList.add('hidden'); loadStaff();
+    }).catch(function(e){ toast(e.message, true); });
+  };
+
+  document.getElementById('changePassBtn').onclick = function(){
+    api({ action:'changePassword', password: document.getElementById('newPass').value }).then(function(){
+      toast('Password updated'); document.getElementById('newPass').value = '';
+    }).catch(function(e){ toast(e.message, true); });
+  };
+
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
+    });
+  }
+
+  if (token && me) {
+    showApp();
+    api({ action:'me' }).then(function(r){ me = r.user; localStorage.setItem('ff_user', JSON.stringify(me)); showApp(); loadMenu(); loadScratch(); loadWins(); })
+      .catch(function(){ token=''; localStorage.removeItem('ff_token'); showLogin(); });
+  } else {
+    showLogin();
+  }
+})();
+</script>
+</body>
+</html>
