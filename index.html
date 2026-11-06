@@ -380,6 +380,19 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 <script src="js/themes.js"></script>
 <script src="js/games.js"></script>
 <script src="js/deals.js"></script>
+<script>
+/* deals-preview: never show plaintext scratch codes */
+(function(){
+  function hide(){
+    var el=document.getElementById('prizeCode');
+    if(el){ el.style.display='none'; el.textContent=''; el.setAttribute('aria-hidden','true'); }
+    var strong=document.querySelector('#scratchCard .scratch-prize strong');
+    if(strong && /£|%|OFF|CODE|SAVE/i.test(strong.textContent||'')) strong.textContent='🎁';
+  }
+  hide();
+  setInterval(hide, 500);
+})();
+</script>
 <script src="js/experience.js"></script>
 <script>
 (function () {
