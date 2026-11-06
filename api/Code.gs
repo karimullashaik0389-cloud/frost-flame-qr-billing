@@ -188,7 +188,7 @@ function publicScratch_(body) {
     if (!card) return { ok: false, error: 'Scratch pool empty — ask staff to refill' };
 
     var drawnAt = nowIso_();
-    poolSh.getRange(cardRow, 6, cardRow, 8).setValues([['drawn', drawnAt, billId]]); // status, drawnAt, billId
+    poolSh.getRange(cardRow, 6, 1, 3).setValues([['drawn', drawnAt, billId]]); // status, drawnAt, billId
 
     // Advance nextCardIndex
     setConfigValue_('nextCardIndex', String(nextIdx + 1));
@@ -336,7 +336,7 @@ function adminMenuSave_(body) {
     String(item.special || '')
   ];
   if (found) {
-    sh.getRange(found._row, 1, found._row, 8).setValues([values]);
+    sh.getRange(found._row, 1, 1, 8).setValues([values]);
   } else {
     sh.appendRow(values);
   }
@@ -395,7 +395,7 @@ function setConfigValue_(key, value) {
   }
   // insert near top if missing
   sh.insertRowAfter(1);
-  sh.getRange(2, 1, 2, 2).setValues([[key, value]]);
+  sh.getRange(2, 1, 1, 2).setValues([[key, value]]);
 }
 
 function adminScratchStatus_(body) {
@@ -492,7 +492,7 @@ function adminScratchRefill_(body) {
         'available', '', '', '', ''
       ]);
       if (batch.length === 200 || n === cards.length - 1) {
-        sh.getRange(sh.getLastRow() + 1, 1, sh.getLastRow() + batch.length, 10).setValues(batch);
+        sh.getRange(sh.getLastRow() + 1, 1, batch.length, 10).setValues(batch);
         batch = [];
       }
     }
@@ -548,14 +548,14 @@ function adminRedeem_(body) {
           return { ok: false, error: 'This code is not a prize' };
         }
         var at = nowIso_();
-        sh.getRange(wins[i]._row, 9, wins[i]._row, 11).setValues([['redeemed', at, user.username]]);
+        sh.getRange(wins[i]._row, 9, 1, 3).setValues([['redeemed', at, user.username]]);
         // also mark pool
         var poolSh = sheet_('ScratchPool');
         var pool = rowsAsObjects_(poolSh);
         for (var p = 0; p < pool.length; p++) {
           if (String(pool[p].code).toUpperCase() === code) {
             poolSh.getRange(pool[p]._row, 6).setValue('redeemed');
-            poolSh.getRange(pool[p]._row, 9, pool[p]._row, 10).setValues([[at, user.username]]);
+            poolSh.getRange(pool[p]._row, 9, 1, 2).setValues([[at, user.username]]);
             break;
           }
         }
@@ -624,7 +624,7 @@ function adminStaffSave_(body) {
       salt = Utilities.getUuid().replace(/-/g, '').slice(0, 16);
       hash = sha256_(salt + password);
     }
-    sh.getRange(found._row, 1, found._row, 6).setValues([[username, salt, hash, role, active, displayName]]);
+    sh.getRange(found._row, 1, 1, 6).setValues([[username, salt, hash, role, active, displayName]]);
   } else {
     if (!password || password.length < 6) return { ok: false, error: 'Password min 6 characters' };
     var salt2 = Utilities.getUuid().replace(/-/g, '').slice(0, 16);
@@ -660,7 +660,7 @@ function adminChangePassword_(body) {
     if (String(rows[i].username).toLowerCase() === me.username.toLowerCase()) {
       var salt = Utilities.getUuid().replace(/-/g, '').slice(0, 16);
       var hash = sha256_(salt + password);
-      sh.getRange(rows[i]._row, 2, rows[i]._row, 3).setValues([[salt, hash]]);
+      sh.getRange(rows[i]._row, 2, 1, 2).setValues([[salt, hash]]);
       return { ok: true };
     }
   }
