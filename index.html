@@ -7,7 +7,7 @@
 <meta name="description" content="Premium QR menu and bill for Frost & Flame. No customer data stored." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;700&family=Outfit:wght@300;400;500;600;700&family=Pacifico&family=Special+Elite&display=swap" rel="stylesheet" />
 <style>
 :root{
   --bg:#0b0706; --card:#16100e; --ink:#fff7f0; --muted:#cbb5a6;
@@ -103,8 +103,36 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 .hidden{display:none !important}
 .off{opacity:.45}
 </style>
+<link rel="stylesheet" href="css/themes.css" />
 </head>
 <body>
+
+<div class="ff-particles" id="ffParticles" aria-hidden="true"></div>
+<div class="ff-overlay" id="ffOverlay" role="dialog" aria-modal="true" aria-labelledby="ffGreetTitle">
+  <div class="ff-overlay-card" id="ffGreetCard">
+    <div class="ff-greet-emoji">🔥❄️</div>
+    <h1 class="ff-greet-title" id="ffGreetTitle">Welcome to Frost &amp; Flame</h1>
+    <p class="ff-greet-sub" id="ffGreetSub">A warm hello before the menu — tap continue.</p>
+    <button class="btn btn-primary" id="ffGreetContinue" type="button">Continue</button>
+  </div>
+  <div class="ff-overlay-card hidden" id="ffWhoCard">
+    <h1 class="ff-greet-title" style="font-size:24px">Who are you here with?</h1>
+    <p class="ff-greet-sub">Pick your table vibe — the menu changes to match.</p>
+    <div class="ff-who-grid" id="ffWhoGrid"></div>
+  </div>
+</div>
+<div class="ff-games-dock" id="ffGamesDock" aria-live="polite">
+  <button class="ff-games-close" id="ffGamesClose" type="button" aria-label="Close">×</button>
+  <h3>While you wait…</h3>
+  <p class="blurb">If you want to try this, check your knowledge. One or two options — start right away.</p>
+  <div class="ff-games-opts" id="ffGamesOpts"></div>
+</div>
+<div class="ff-game-modal hidden" id="ffGameModal">
+  <div class="ff-game-sheet">
+    <button class="ff-games-close" id="ffGameModalClose" type="button" aria-label="Close game">×</button>
+    <div id="ffGameHost"></div>
+  </div>
+</div>
 <video class="bg-video" autoplay muted loop playsinline poster="img/logo.png" aria-hidden="true">
   <source src="img/menu_bg.mp4" type="video/mp4" />
 </video>
@@ -116,6 +144,19 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     <p class="sub">Tark Limited · 194 Hackney Road, London E2 7QL</p>
     <div class="pill">Prototype · no customer data stored</div>
   </header>
+
+
+  <p id="ffThemeGreet" class="hidden"></p>
+  <div class="theme-bar hidden" id="ffThemeBar">
+    <div class="theme-chip" id="ffThemeChip"></div>
+    <button class="theme-change" id="ffThemeChange" type="button">Change</button>
+  </div>
+  <div class="ff-peace" id="ffPeace">
+    <p>Be very peaceful, just eat this, feel this like a home.</p>
+    <span class="soft">Leave outside thoughts at the door. Enjoy the food calmly — we've got you.</span>
+  </div>
+  <div class="ff-lines" id="ffLines" aria-live="polite"></div>
+  <div id="ffFeature" class="hidden"></div>
 
   <div class="tabs" role="tablist">
     <button class="tab active" id="tabMenu" type="button">Menu</button>
@@ -218,6 +259,11 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
       <p class="note">Quantities stay only on this phone until you close the page. Nothing is uploaded.</p>
     </div>
 
+
+    <div class="card ff-facts" id="ffFacts">
+      <div class="label">While you wait · interesting bite</div>
+      <div class="fact" id="ffFactText">Stone ice cream is rolled fresh on a frozen plate.</div>
+    </div>
     <div class="card">
       <h2>Scratch &amp; win</h2>
       <p class="sub" style="margin:0 0 10px">Scratch the foil for a table offer. One card per bill. Show your code to staff to redeem.</p>
@@ -252,6 +298,11 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
       <button class="btn btn-primary" id="orderBtn" type="button">Place order · ping staff (demo)</button>
       <button class="btn btn-ghost" id="payBtn" type="button">Pay online · demo</button>
       <p class="note">Staff ping uses a free public demo channel (ntfy). No name, phone or card is saved on this page.</p>
+
+      <div class="ff-goodbye" id="ffGoodbye">
+        <strong>Come back soon, we'll miss you.</strong>
+        <span>Thanks for sharing your table with Frost &amp; Flame.</span>
+      </div>
     </div>
   </section>
 
@@ -264,18 +315,21 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
+<script src="js/themes.js"></script>
+<script src="js/games.js"></script>
+<script src="js/experience.js"></script>
 <script>
 (function () {
   var MENU = {
-    weekend: { name: 'Chai Affogato Stone', note: 'Weekend limited', price: 8.5, qtyId: 'q-weekend', special: 'weekend' },
-    pulav: { name: 'Mutton Pulav', note: 'Bone-in · fragrant rice', price: 9.99, qtyId: 'q-pulav', special: '' },
-    stone: { name: 'Stone Ice Cream', note: 'Mint Choc Chip', price: 7.5, qtyId: 'q-stone', special: '' },
-    pistachio: { name: 'Pistachio Stone', note: 'Crushed nuts', price: 7.9, qtyId: 'q-pistachio', special: '' },
-    mango: { name: 'Chilli Mango', note: 'Sweet heat', price: 7.9, qtyId: 'q-mango', special: '' },
-    chaat: { name: 'Flame Chaat', note: 'Street-style', price: 6.5, qtyId: 'q-chaat', special: '' },
-    chai: { name: 'Masala Chai', note: 'Hot · medium sweet', price: 3.5, qtyId: 'q-chai', special: '' },
-    lassi: { name: 'Frost Lassi', note: 'Cool yoghurt', price: 4.2, qtyId: 'q-lassi', special: '' },
-    gulab: { name: 'Gulab Bite', note: 'Warm syrup', price: 4.8, qtyId: 'q-gulab', special: '' }
+    weekend: { name: 'Chai Affogato Stone', note: 'Weekend limited', price: 8.5, qtyId: 'q-weekend', special: 'weekend', image: 'img/weekend.jpg', tags: ['couple','share','solo','kids'] },
+    pulav: { name: 'Mutton Pulav', note: 'Bone-in · fragrant rice', price: 9.99, qtyId: 'q-pulav', special: '', image: 'img/mutton_pulav.jpg', tags: ['solo','share','group','platter'] },
+    stone: { name: 'Stone Ice Cream', note: 'Mint Choc Chip', price: 7.5, qtyId: 'q-stone', special: '', image: 'img/stone.jpg', tags: ['solo','couple','share','kids'] },
+    pistachio: { name: 'Pistachio Stone', note: 'Crushed nuts', price: 7.9, qtyId: 'q-pistachio', special: '', image: 'img/pistachio.jpg', tags: ['solo','couple'] },
+    mango: { name: 'Chilli Mango', note: 'Sweet heat', price: 7.9, qtyId: 'q-mango', special: '', image: 'img/chilli_mango.jpg', tags: ['solo','couple','kids'] },
+    chaat: { name: 'Flame Chaat', note: 'Street-style', price: 6.5, qtyId: 'q-chaat', special: '', image: 'img/chaat.jpg', tags: ['solo','share','group','friends'] },
+    chai: { name: 'Masala Chai', note: 'Hot · medium sweet', price: 3.5, qtyId: 'q-chai', special: '', image: 'img/chai.jpg', tags: ['solo','couple','group'] },
+    lassi: { name: 'Frost Lassi', note: 'Cool yoghurt', price: 4.2, qtyId: 'q-lassi', special: '', image: 'img/lassi.jpg', tags: ['solo','couple','kids'] },
+    gulab: { name: 'Gulab Bite', note: 'Warm syrup', price: 4.8, qtyId: 'q-gulab', special: '', image: 'img/gulab.jpg', tags: ['couple','share','kids'] }
   };
   var qty = { weekend:0, pulav:0, stone:2, pistachio:0, mango:0, chaat:0, chai:1, lassi:0, gulab:0 };
   var params = new URLSearchParams(location.search);
@@ -285,6 +339,45 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
   document.getElementById('billNo').textContent = bill;
 
   function money(n){ return '£' + n.toFixed(2); }
+
+  function menuKeysOrdered(){
+    var keys = Object.keys(MENU).filter(function(k){ return MENU[k].special !== 'weekend'; });
+    if (window.FFExperience && FFExperience.getThemeId()) {
+      return FFExperience.sortKeys(keys, MENU);
+    }
+    return keys;
+  }
+
+  function rebuildMenuList(){
+    var listCard = document.querySelector('#panelMenu .card:not(.special):not(.ff-facts)');
+    // prefer the card that contains #toBillBtn or h2 Menu
+    var cards = document.querySelectorAll('#panelMenu .card');
+    listCard = null;
+    cards.forEach(function(c){
+      if (c.classList.contains('special') || c.classList.contains('ff-facts')) return;
+      if (c.querySelector('#toBillBtn') || (c.querySelector('h2') && c.querySelector('h2').textContent.trim() === 'Menu')) listCard = c;
+    });
+    if (!listCard) return;
+    var theme = window.FFExperience && FFExperience.getTheme();
+    var keys = menuKeysOrdered();
+    var html = '<h2>Menu</h2>' + keys.map(function(k){
+      var m = MENU[k];
+      var badge = (window.FFExperience && theme) ? FFExperience.badgeHtml(theme, k, MENU) : '';
+      return '<div class="menu-item" data-id="'+k+'">'+
+        '<img src="'+(m.image||'img/logo.png')+'" alt="" />'+
+        '<div><h3>'+m.name+'</h3>'+badge+'<p>'+(m.note||'')+'</p>'+
+        '<div class="qty"><button type="button" data-add="'+k+'">+</button>'+
+        '<span id="q-'+k+'">'+(qty[k]||0)+'</span>'+
+        '<button type="button" data-sub="'+k+'">−</button></div></div>'+
+        '<div class="price">£'+Number(m.price).toFixed(2)+'</div></div>';
+    }).join('') +
+    '<button class="btn btn-primary" id="toBillBtn" type="button">Add to bill · continue</button>'+
+    '<p class="note">Quantities stay only on this phone until you close the page. Nothing is uploaded.</p>';
+    listCard.innerHTML = html;
+    var toBill = document.getElementById('toBillBtn');
+    if (toBill) toBill.onclick = function(){ renderBill(); showTab('bill'); };
+  }
+
   function renderQty(){
     Object.keys(MENU).forEach(function(k){
       var el = document.getElementById(MENU[k].qtyId);
@@ -486,7 +579,8 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
         price: Number(it.price) || 0,
         qtyId: 'q-' + it.id,
         image: it.image || '',
-        special: it.special || ''
+        special: it.special || '',
+        tags: it.tags || (window.FFThemes && FFThemes.DEFAULT_TAGS[it.id]) || []
       };
       if (typeof qtyKeep[it.id] !== 'number') qtyKeep[it.id] = 0;
     });
@@ -524,8 +618,7 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     listCard.innerHTML = html;
     MENU = next;
     qty = qtyKeep;
-    var toBill = document.getElementById('toBillBtn');
-    if (toBill) toBill.onclick = function(){ renderBill(); showTab('bill'); };
+    rebuildMenuList();
     renderQty(); renderBill();
   }
   function escHtml(s){ return String(s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);}); }
@@ -563,6 +656,28 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     this.disabled = true; this.textContent = 'Paid (demo)';
     toast('Prototype only — no card details taken, nothing saved.');
   };
+
+  function renderMenu(){ rebuildMenuList(); renderQty(); }
+
+  if (window.FFExperience) {
+    var greetEl = document.getElementById('ffThemeGreet');
+    FFExperience.init({
+      getMenu: function(){ return MENU; },
+      getQty: function(){ return qty; },
+      setQty: function(q){ qty = q; },
+      renderMenu: function(){
+        renderMenu();
+        if (greetEl) {
+          var th = FFExperience.getTheme();
+          if (th) { greetEl.textContent = th.greeting; greetEl.classList.remove('hidden'); }
+        }
+      },
+      renderBill: renderBill,
+      toast: toast
+    });
+  } else {
+    rebuildMenuList();
+  }
 
   renderQty(); renderBill();
 })();

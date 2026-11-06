@@ -1,0 +1,313 @@
+/* Frost & Flame — guest theme layer (mobile-first) */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Cinzel:wght@600;700&family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;700&family=Pacifico&family=Special+Elite&display=swap');
+
+.ff-overlay{
+  position:fixed; inset:0; z-index:80;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px 16px;
+  background:rgba(8,5,4,.88);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  transition:opacity .45s ease, visibility .45s ease;
+}
+.ff-overlay.hide{opacity:0; visibility:hidden; pointer-events:none}
+.ff-overlay-card{
+  width:min(420px,100%); text-align:center;
+  background:var(--theme-grad, linear-gradient(180deg,rgba(255,255,255,.08),transparent 40%), rgba(22,16,14,.95));
+  border:1px solid var(--line); border-radius:22px; padding:28px 18px 22px;
+  box-shadow:0 24px 60px rgba(0,0,0,.5);
+  animation:ff-pop .55s ease both;
+}
+@keyframes ff-pop{
+  from{transform:translateY(18px) scale(.96); opacity:0}
+  to{transform:none; opacity:1}
+}
+.ff-greet-emoji{font-size:42px; line-height:1; margin-bottom:8px}
+.ff-greet-title{
+  font-family:var(--ff-display, "Cormorant Garamond", serif);
+  font-size:28px; margin:0 0 8px; line-height:1.2;
+}
+.ff-greet-sub{color:var(--muted); font-size:14px; margin:0 0 16px; line-height:1.45}
+.ff-who-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; text-align:left;
+}
+.ff-who-btn{
+  border:1px solid var(--line); background:rgba(255,255,255,.05);
+  color:var(--ink); border-radius:16px; padding:12px 10px; cursor:pointer;
+  font:inherit; text-align:left; transition:transform .15s ease, border-color .15s;
+  min-height:78px;
+}
+.ff-who-btn:active{transform:scale(.98)}
+.ff-who-btn:hover{border-color:var(--accent, var(--flame))}
+.ff-who-btn .e{font-size:22px; display:block; margin-bottom:4px}
+.ff-who-btn b{display:block; font-size:14px}
+.ff-who-btn span{display:block; font-size:11px; color:var(--muted); margin-top:2px}
+
+.ff-particles{
+  position:fixed; inset:0; pointer-events:none; z-index:70; overflow:hidden;
+}
+.ff-particle{
+  position:absolute; top:-20px; font-size:18px; opacity:.9;
+  animation:ff-fall linear forwards;
+}
+@keyframes ff-fall{
+  to{transform:translateY(110vh) rotate(360deg); opacity:0}
+}
+@media (prefers-reduced-motion: reduce){
+  .ff-overlay-card, .ff-particle, .ff-line-rotator, .theme-chip{animation:none !important}
+  .ff-particle{display:none}
+}
+
+.theme-bar{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin:0 0 12px; padding:8px 10px; border-radius:14px;
+  border:1px solid var(--line); background:rgba(255,255,255,.04);
+}
+.theme-chip{
+  font-size:12px; font-weight:600; color:var(--ink);
+  display:flex; align-items:center; gap:6px;
+}
+.theme-chip b{font-family:var(--ff-display, inherit); font-size:15px; font-weight:700}
+.theme-change{
+  border:1px solid var(--line); background:rgba(255,255,255,.06);
+  color:var(--ink); border-radius:999px; padding:6px 10px; font-size:11px;
+  font-weight:600; cursor:pointer; font-family:inherit;
+}
+
+.ff-lines{
+  margin:0 0 12px; padding:12px 14px; border-radius:14px;
+  border:1px dashed rgba(244,194,122,.35);
+  background:rgba(255,255,255,.03); min-height:52px;
+  font-size:13px; line-height:1.45; color:var(--ink);
+}
+.ff-lines .tag{display:block; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--frost); margin-bottom:4px}
+
+.ff-peace{
+  margin:0 0 12px; padding:14px; border-radius:16px;
+  border:1px solid rgba(125,211,252,.25);
+  background:linear-gradient(135deg, rgba(125,211,252,.08), rgba(232,93,4,.06));
+  text-align:center;
+}
+.ff-peace p{margin:0; font-size:14px; line-height:1.5; color:var(--ink)}
+.ff-peace .soft{display:block; margin-top:6px; color:var(--muted); font-size:12px}
+
+.ff-facts{
+  margin:0 0 12px; padding:12px 14px; border-radius:14px;
+  border:1px solid var(--line); background:rgba(0,0,0,.25);
+}
+.ff-facts .label{font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin-bottom:6px}
+.ff-facts .fact{font-size:13px; line-height:1.45; color:var(--ink); min-height:3.2em; transition:opacity .35s}
+.ff-facts .fact.fade{opacity:0}
+
+.ff-badge{
+  display:inline-block; margin:4px 0 2px; font-size:10px; font-weight:600;
+  letter-spacing:.04em; padding:3px 8px; border-radius:999px;
+  background:rgba(244,194,122,.15); color:var(--gold);
+  border:1px solid rgba(244,194,122,.4);
+}
+.ff-suggest{display:block; margin-top:2px; font-size:11px; color:var(--frost); font-style:italic}
+
+.ff-roles{display:grid; gap:8px; margin:0 0 12px}
+.ff-role{
+  border:1px solid var(--line); background:rgba(255,255,255,.04);
+  border-radius:12px; padding:10px 12px; cursor:pointer; text-align:left;
+  color:var(--ink); font:inherit;
+}
+.ff-role b{display:block; font-size:13px}
+.ff-role span{display:block; font-size:11px; color:var(--muted); margin-top:2px}
+.ff-role.on{border-color:var(--accent); background:rgba(45,226,197,.08)}
+
+.ff-feast{
+  margin:0 0 12px; padding:12px; border-radius:14px;
+  border:1px solid rgba(232,160,32,.35); background:rgba(232,160,32,.08);
+}
+.ff-feast label{font-size:12px; color:var(--muted)}
+.ff-feast input{
+  width:72px; margin-left:8px; padding:8px; border-radius:8px;
+  border:1px solid var(--line); background:rgba(0,0,0,.3); color:var(--ink); font:inherit;
+}
+.ff-feast p{margin:8px 0 0; font-size:13px; line-height:1.4}
+
+.ff-games-dock{
+  position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(140%);
+  width:min(420px,92vw); z-index:60;
+  background:rgba(16,12,10,.96); border:1px solid var(--line); border-radius:18px;
+  padding:14px; box-shadow:0 16px 40px rgba(0,0,0,.5);
+  transition:transform .4s ease;
+}
+.ff-games-dock.show{transform:translateX(-50%) translateY(0)}
+.ff-games-dock h3{margin:0 0 4px; font-size:15px}
+.ff-games-dock .blurb{margin:0 0 10px; font-size:12px; color:var(--muted); line-height:1.4}
+.ff-games-opts{display:grid; gap:8px}
+.ff-games-opt{
+  display:flex; align-items:center; gap:10px; width:100%;
+  border:1px solid var(--line); background:rgba(255,255,255,.05);
+  color:var(--ink); border-radius:12px; padding:12px; font:inherit; cursor:pointer; text-align:left;
+}
+.ff-games-opt .e{font-size:22px}
+.ff-games-close{
+  position:absolute; top:10px; right:10px; border:0; background:transparent;
+  color:var(--muted); font-size:18px; cursor:pointer;
+}
+
+.ff-game-modal{
+  position:fixed; inset:0; z-index:90; background:rgba(0,0,0,.72);
+  display:flex; align-items:flex-end; justify-content:center; padding:12px;
+}
+.ff-game-modal .ff-game-sheet{
+  width:min(460px,100%); max-height:88vh; overflow:auto;
+  background:var(--card, #16100e); border:1px solid var(--line); border-radius:18px 18px 12px 12px;
+  padding:16px 14px 20px; position:relative;
+}
+.ff-game-box h3{margin:0 0 4px; font-size:18px}
+.ff-game-blurb{margin:0 0 12px; color:var(--muted); font-size:12px; line-height:1.4}
+.ff-game-q{font-size:15px; font-weight:600; margin:0 0 10px}
+.ff-game-opts{display:grid; gap:8px}
+.ff-game-opt{
+  border:1px solid var(--line); background:rgba(255,255,255,.05);
+  color:var(--ink); border-radius:12px; padding:12px; font:inherit; cursor:pointer; text-align:left;
+}
+.ff-game-opt.ok{border-color:#22c55e; background:rgba(34,197,94,.15)}
+.ff-game-opt.no{border-color:#fb7185; background:rgba(251,113,133,.12)}
+.ff-game-done{font-size:14px; line-height:1.45; margin:8px 0 0}
+.ff-puzzle{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:6px; max-width:240px; margin:0 auto;
+}
+.ff-puzzle-tile{
+  aspect-ratio:1; border-radius:10px; border:1px solid var(--line);
+  background:linear-gradient(135deg, rgba(125,211,252,.25), rgba(232,93,4,.2));
+  color:var(--ink); font-size:20px; font-weight:700; cursor:pointer; font-family:inherit;
+}
+.ff-puzzle-tile.empty{background:rgba(255,255,255,.03); border-style:dashed; cursor:default}
+.ff-palette{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px}
+.ff-swatch{
+  width:32px; height:32px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0;
+}
+.ff-swatch.on{border-color:#fff; box-shadow:0 0 0 2px var(--accent, var(--flame))}
+.ff-color-svg{width:100%; max-width:220px; display:block; margin:0 auto; background:rgba(0,0,0,.2); border-radius:12px}
+
+.ff-goodbye{
+  text-align:center; margin-top:14px; padding:12px;
+  border-radius:14px; border:1px solid rgba(244,194,122,.3);
+  background:rgba(244,194,122,.08);
+}
+.ff-goodbye strong{display:block; font-family:var(--ff-display, "Cormorant Garamond", serif); font-size:18px; margin-bottom:4px}
+.ff-goodbye span{font-size:12px; color:var(--muted)}
+
+body.theme-solo_m .brand,
+body.theme-solo_m .card h2,
+body.theme-solo_f .brand,
+body.theme-couple .brand,
+body.theme-couple .card h2,
+body.theme-gang .brand,
+body.theme-family .brand,
+body.theme-family .card h2,
+body.theme-friends .brand{
+  font-family:var(--ff-display, "Cormorant Garamond", serif);
+}
+body.theme-gang .sub,
+body.theme-gang .menu-item p,
+body.theme-gang .ff-lines{font-family:var(--ff-body, inherit); letter-spacing:.02em}
+
+body.theme-solo_m{background:#121212}
+body.theme-solo_f{background:#2a1824}
+body.theme-friends{background:#0f2a2e}
+body.theme-couple{background:#1a080c}
+body.theme-gang{background:#060b18}
+body.theme-family{background:#1a1208}
+
+/* Motif wash behind content (CSS-only, no new media files) */
+body.theme-solo_m .bg-scrim{
+  background:
+    radial-gradient(600px 380px at 10% 0%, rgba(255,106,0,.35), transparent 55%),
+    radial-gradient(500px 320px at 90% 10%, rgba(255,229,102,.18), transparent 50%),
+    linear-gradient(180deg, rgba(18,18,18,.55), rgba(18,18,18,.9));
+}
+body.theme-solo_f .bg-scrim{
+  background:
+    radial-gradient(560px 360px at 80% 0%, rgba(232,145,176,.35), transparent 55%),
+    radial-gradient(480px 300px at 10% 20%, rgba(196,161,224,.22), transparent 50%),
+    linear-gradient(180deg, rgba(42,24,36,.5), rgba(42,24,36,.9));
+}
+body.theme-friends .bg-scrim{
+  background:
+    radial-gradient(560px 360px at 50% 0%, rgba(255,229,102,.28), transparent 55%),
+    radial-gradient(480px 300px at 0% 40%, rgba(46,196,182,.22), transparent 50%),
+    linear-gradient(180deg, rgba(15,42,46,.45), rgba(15,42,46,.9));
+}
+body.theme-couple .bg-scrim{
+  background:
+    radial-gradient(560px 380px at 50% 0%, rgba(196,30,58,.32), transparent 55%),
+    radial-gradient(420px 280px at 90% 30%, rgba(244,160,176,.2), transparent 50%),
+    linear-gradient(180deg, rgba(26,8,12,.5), rgba(26,8,12,.92));
+}
+body.theme-gang .bg-scrim{
+  background:
+    radial-gradient(520px 340px at 20% 0%, rgba(45,226,197,.22), transparent 55%),
+    radial-gradient(480px 300px at 90% 10%, rgba(255,179,71,.18), transparent 50%),
+    linear-gradient(180deg, rgba(6,11,24,.55), rgba(6,11,24,.94));
+}
+body.theme-family .bg-scrim{
+  background:
+    radial-gradient(560px 360px at 50% 0%, rgba(232,160,32,.3), transparent 55%),
+    radial-gradient(420px 280px at 10% 40%, rgba(45,106,79,.25), transparent 50%),
+    linear-gradient(180deg, rgba(26,18,8,.5), rgba(26,18,8,.92));
+}
+
+.hidden{display:none !important}
+
+/* Feature cards + micro-polish (phone) */
+.ff-feature-card h2{font-size:18px;margin:0 0 4px}
+.ff-quick{display:grid;gap:8px}
+.ff-quick-btn{
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  width:100%; min-height:48px; padding:12px 14px; border-radius:14px;
+  border:1px solid var(--line); background:rgba(255,255,255,.05);
+  color:var(--ink); font:inherit; cursor:pointer; text-align:left;
+}
+.ff-quick-btn b{font-size:14px}
+.ff-quick-btn span{font-size:11px; color:var(--muted); white-space:nowrap}
+.ff-pay-row{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px}
+.ff-pay{
+  min-height:48px; border-radius:12px; border:1px solid var(--line);
+  background:rgba(255,255,255,.06); color:var(--ink); font:inherit; font-weight:600; cursor:pointer;
+}
+.ff-pay-out{margin:10px 0 0; font-size:13px; line-height:1.4; color:var(--frost); min-height:1.4em}
+.ff-table-picks{margin-top:10px; padding:10px; border-radius:12px; background:rgba(0,0,0,.25); font-size:12px; line-height:1.4}
+.ff-spice{margin-left:4px; background:rgba(125,211,252,.12); color:var(--frost); border-color:rgba(125,211,252,.35)}
+.qty button{min-width:44px; min-height:44px}
+.ff-who-btn{min-height:88px; padding:14px 12px}
+.theme-change{min-height:36px; padding:8px 12px}
+.ff-games-opt{min-height:56px}
+
+body.theme-family_kids .bg-scrim{
+  background:
+    radial-gradient(560px 360px at 20% 0%, rgba(90,214,125,.28), transparent 55%),
+    radial-gradient(480px 300px at 90% 10%, rgba(255,138,101,.22), transparent 50%),
+    radial-gradient(400px 260px at 50% 80%, rgba(125,211,252,.18), transparent 50%),
+    linear-gradient(180deg, rgba(12,39,68,.5), rgba(12,39,68,.92));
+}
+body.theme-family_kids .brand,
+body.theme-family_kids .card h2{font-family:var(--ff-display, Fredoka, sans-serif)}
+
+#ffFeature{margin-bottom:12px}
+#ffThemeGreet{text-align:center; color:var(--muted); font-size:13px; margin:0 0 10px; line-height:1.4}
+
+/* Family-with-kids: separate kids colouring + adults facts zones */
+.ff-family-zones{display:grid; gap:12px; margin-bottom:12px}
+.ff-zone-label{
+  display:inline-block; font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  font-weight:700; padding:3px 8px; border-radius:999px; margin-bottom:8px;
+}
+.ff-zone-kids .ff-zone-label{background:rgba(90,214,125,.2); color:#86efac; border:1px solid rgba(90,214,125,.4)}
+.ff-zone-adults .ff-zone-label{background:rgba(125,211,252,.15); color:#7dd3fc; border:1px solid rgba(125,211,252,.35)}
+.ff-zone-kids{border-color:rgba(90,214,125,.35)!important}
+.ff-zone-adults{border-color:rgba(125,211,252,.3)!important}
+.ff-adult-fact{
+  font-size:14px; line-height:1.45; padding:10px 12px; border-radius:12px;
+  background:rgba(0,0,0,.25); min-height:3.2em; margin-bottom:8px;
+}
+.ff-adult-tips{margin:0; padding-left:18px; color:var(--muted); font-size:12px; line-height:1.5}
+.ff-adult-tips li{margin-bottom:4px}
+.ff-zone-kids .ff-color-svg{max-width:200px}
+.ff-zone-kids .ff-game-box{padding:0}
+.ff-zone-kids .ff-game-box h3, .ff-zone-kids .ff-game-blurb{display:none} /* avoid duplicate titles */

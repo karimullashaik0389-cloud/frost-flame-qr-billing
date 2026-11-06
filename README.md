@@ -4,6 +4,10 @@ Static customer page for Tark Limited / Frost & Flame (GitHub Pages).
 
 - Customer: `https://karimullashaik0389-cloud.github.io/frost-flame-qr-billing/?table=4`
 - Staff admin: `https://karimullashaik0389-cloud.github.io/frost-flame-qr-billing/admin.html`
+- Theme deep links: add `&group=solo_m|solo_f|friends|couple|gang|family|family_kids`
+- Fast games test: add `&fast=1` (games appear in ~8s)
+
+Seven guest themes personalise greeting, colours, menu order, badges, scratch copy and wait-time games. Research notes: `docs/RESEARCH.md`.
 
 Menu, prices and scratch-card odds are managed in Google Sheets via an Apps Script API.
 See `api/DEPLOY.md` for the one-time deploy step, then set `FF_API_URL` in `js/config.js`.

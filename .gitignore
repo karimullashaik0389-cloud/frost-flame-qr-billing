@@ -4,3 +4,7 @@
 __pycache__/
 _seed_batches/
 _seed_scratch.json
+screenshots/
+node_modules/
+package-lock.json
+package.json
