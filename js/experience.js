@@ -425,21 +425,25 @@
     $('ffGamesClose') && ($('ffGamesClose').onclick = function () { $('ffGamesDock').classList.remove('show'); });
     $('ffGameModalClose') && ($('ffGameModalClose').onclick = function () { $('ffGameModal').classList.add('hidden'); });
 
-    var forced = params().get('group') || params().get('theme');
-    var saved = null;
-    try { saved = sessionStorage.getItem(STORAGE_THEME); } catch (e) {}
-    if (forced && FFThemes.THEMES[forced]) {
-      selectTheme(forced, false);
-      showOverlay(false);
-      if (isFast()) burst(FFThemes.THEMES[forced].surprise);
-    } else if (saved && FFThemes.THEMES[saved] && !params().get('fresh')) {
-      selectTheme(saved, false);
-      showOverlay(false);
-    } else {
-      openPicker('greet');
+    function startGuest() {
+      var forced = params().get('group') || params().get('theme');
+      var saved = null;
+      try { saved = sessionStorage.getItem(STORAGE_THEME); } catch (e) {}
+      if (forced && FFThemes.THEMES[forced]) {
+        selectTheme(forced, false);
+        showOverlay(false);
+        if (isFast()) burst(FFThemes.THEMES[forced].surprise);
+      } else if (saved && FFThemes.THEMES[saved] && !params().get('fresh')) {
+        selectTheme(saved, false);
+        showOverlay(false);
+      } else {
+        openPicker('greet');
+      }
+      scheduleGames();
+      if (isFast()) setTimeout(showGamesDock, 8500);
     }
-    scheduleGames();
-    if (isFast()) setTimeout(showGamesDock, 8500);
+    if (global.FFIntro && typeof global.FFIntro.run === 'function') global.FFIntro.run(startGuest);
+    else startGuest();
   }
 
   global.FFExperience = {

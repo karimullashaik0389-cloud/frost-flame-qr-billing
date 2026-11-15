@@ -16,6 +16,7 @@ const context = await browser.newContext({
   isMobile: true,
   hasTouch: true,
 });
+  await context.addInitScript(() => { try { sessionStorage.setItem('ff_intro_seen', '1'); } catch (e) {} });
 
 async function checkPage(name, url, fn) {
   const page = await context.newPage();

@@ -10,12 +10,29 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Outfit:wght@300;400;500;600;700&family=Bangers&family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;700&family=Pacifico&family=Special+Elite&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/site.css?v=20261115b" />
-<link rel="stylesheet" href="css/themes.css?v=20261115b" />
-<link rel="stylesheet" href="css/qr.css?v=20261115b" />
+<link rel="stylesheet" href="css/site.css?v=20261115e" />
+<link rel="stylesheet" href="css/themes.css?v=20261115e" />
+<link rel="stylesheet" href="css/qr.css?v=20261115e" />
+<link rel="stylesheet" href="css/ff-intro.css?v=20261115e" />
+<script>
+(function(){
+  try {
+    var force=/(?:^|[?&])intro=1(?:&|$)/.test(location.search);
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!force&&(reduce||sessionStorage.getItem('ff_intro_seen')==='1'))document.documentElement.classList.add('ff-intro-skip');
+  } catch(e){}
+})();
+</script>
 <script>try{var m=localStorage.getItem('ff-mode');if(m==='flame'||m==='frost')document.documentElement.setAttribute('data-mode',m);}catch(e){}</script>
 </head>
 <body>
+<div id="ffIntro" class="ff-intro" role="dialog" aria-modal="true" aria-label="Welcome to Frost &amp; Flame" style="--ff-intro-poster:url('video/intro-poster.webp')">
+  <video id="ffIntroVideo" muted playsinline webkit-playsinline preload="auto" poster="video/intro-poster.webp" aria-hidden="true">
+    <source src="video/intro.webm" type="video/webm">
+    <source src="video/intro.mp4" type="video/mp4">
+  </video>
+  <button type="button" class="ff-intro-skip" id="ffIntroSkip">Skip</button>
+</div>
 <div class="ff-particles" id="ffParticles" aria-hidden="true"></div>
 <div class="ff-overlay" id="ffOverlay" role="dialog" aria-modal="true" aria-labelledby="ffGreetTitle">
   <div class="ff-overlay-card" id="ffGreetCard">
@@ -170,12 +187,13 @@
 </footer>
 <div class="toast" id="toast"></div>
 
-<script src="js/config.js?v=20261115b"></script>
-<script src="js/api.js?v=20261115b"></script>
-<script src="js/themes.js?v=20261115b"></script>
-<script src="js/games.js?v=20261115b"></script>
-<script src="js/experience.js?v=20261115b"></script>
-<script src="js/menu-data.js?v=20261115b"></script>
-<script src="js/qr-menu.js?v=20261115b"></script>
+<script src="js/config.js?v=20261115e"></script>
+<script src="js/api.js?v=20261115e"></script>
+<script src="js/themes.js?v=20261115e"></script>
+<script src="js/games.js?v=20261115e"></script>
+<script src="js/ff-intro.js?v=20261115e"></script>
+<script src="js/experience.js?v=20261115e"></script>
+<script src="js/menu-data.js?v=20261115e"></script>
+<script src="js/qr-menu.js?v=20261115e"></script>
 </body>
 </html>
