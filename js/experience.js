@@ -351,13 +351,10 @@
       if (greetCard) {
         greetCard.classList.remove('hidden');
         $('ffGreetTitle').textContent = timeGreeting() + ', welcome to Frost & Flame';
-        $('ffGreetSub').textContent = '🔥❄️ A little surprise before the menu — who\'s at your table?';
+        $('ffGreetSub').textContent = '🔥❄️ A little surprise before the menu — tap Continue.';
       }
       if (whoCard) whoCard.classList.add('hidden');
-      setTimeout(function () {
-        if (greetCard) greetCard.classList.add('hidden');
-        if (whoCard) whoCard.classList.remove('hidden');
-      }, reducedMotion() ? 400 : 1600);
+      // stays on the welcome card until the guest taps Continue
     }
   }
 
