@@ -253,7 +253,7 @@
   function toast(msg) { var el = $('toast'); el.textContent = msg; el.classList.add('show'); setTimeout(function () { el.classList.remove('show'); }, 4200); }
 
   // ---------- order + pay (demo) ----------
-  $('orderBtn').onclick = function () {
+  if ($('orderBtn')) $('orderBtn').onclick = function () {
     var ls = lines(); if (!ls.length) { toast('Add dishes on the Menu tab first.'); return; }
     var total = ls.reduce(function (a, b) { return a + b.line; }, 0);
     var msg = 'Frost & Flame · Table ' + table + ' · ' + ls.map(function (l) { return l.qty + '× ' + l.name; }).join(', ') + ' · Total ' + money(total);
@@ -263,7 +263,7 @@
     if (window.Notification && Notification.permission === 'granted') new Notification('Frost & Flame order', { body: msg });
     else if (window.Notification && Notification.permission !== 'denied') Notification.requestPermission();
   };
-  $('payBtn').onclick = function () { this.disabled = true; this.textContent = 'Paid (demo)'; toast('Prototype only — no card details taken, nothing saved.'); };
+  if ($('payBtn')) $('payBtn').onclick = function () { this.disabled = true; this.textContent = 'Paid (demo)'; toast('Prototype only — no card details taken, nothing saved.'); };
 
   // ---------- table themes (who are you with) ----------
   function aliasMenu() { var m = {}; Object.keys(MENU).forEach(function (k) { m[k] = MENU[k]; }); Object.keys(ALIAS).forEach(function (a) { if (MENU[ALIAS[a]]) m[a] = MENU[ALIAS[a]]; }); return m; }

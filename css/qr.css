@@ -73,3 +73,6 @@ html[data-mode="flame"] .btn-primary { background: var(--flame); color: #1a0803;
 .order-bar .btn { justify-content: space-between; }
 #ffThemeGreet, .theme-bar, .ff-peace, .ff-lines, #ffFeature { margin-left: var(--pad); margin-right: var(--pad); }
 .menu-empty { color: var(--muted); padding: 1rem 0; }
+
+/* pay-at-the-end note (replaces demo order/pay buttons) */
+.enjoy-note{margin:14px 0 4px;padding:14px 16px;border-radius:14px;text-align:center;font-size:1.02rem;line-height:1.5;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
