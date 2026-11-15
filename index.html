@@ -1,112 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-mode="frost">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Frost & Flame — Menu & Bill</title>
-<meta name="description" content="Premium QR menu and bill for Frost & Flame. No customer data stored." />
+<title>Frost &amp; Flame · Table menu</title>
+<meta name="description" content="Frost &amp; Flame table menu and bill. Stone ice cream, Andhra pulao and Indian street food. No customer data stored." />
+<meta name="theme-color" content="#07080a" />
+<link rel="icon" href="img/logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;700&family=Outfit:wght@300;400;500;600;700&family=Pacifico&family=Special+Elite&display=swap" rel="stylesheet" />
-<style>
-:root{
-  --bg:#0b0706; --card:#16100e; --ink:#fff7f0; --muted:#cbb5a6;
-  --line:#3a2a24; --flame:#e85d04; --frost:#7dd3fc; --gold:#f4c27a;
-  --ok:#22c55e; --danger:#fb7185;
-}
-*{box-sizing:border-box}
-body{
-  margin:0; min-height:100vh; color:var(--ink);
-  font-family:Outfit,system-ui,sans-serif;
-  background: var(--bg);
-}
-.bg-video{
-  position:fixed; inset:0; width:100%; height:100%; object-fit:cover;
-  z-index:-2; pointer-events:none; filter:saturate(1.08) brightness(.7);
-}
-.bg-scrim{
-  position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(11,7,6,.5), rgba(11,7,6,.78) 50%, rgba(11,7,6,.92)),
-    radial-gradient(700px 420px at 8% 0%, rgba(232,93,4,.25), transparent 60%),
-    radial-gradient(700px 420px at 92% 8%, rgba(125,211,252,.16), transparent 55%);
-}
-.wrap{max-width:460px;margin:0 auto;padding:18px 14px 36px}
-.hero{text-align:center;margin-bottom:14px}
-.logo{width:78px;height:78px;border-radius:50%;object-fit:cover;border:2px solid rgba(244,194,122,.45);box-shadow:0 10px 30px rgba(232,93,4,.35)}
-.brand{font-family:"Cormorant Garamond",serif;font-size:34px;font-weight:700;margin:10px 0 2px;letter-spacing:.01em}
-.sub{color:var(--muted);font-size:12px;line-height:1.45;margin:0}
-.pill{display:inline-block;margin-top:10px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--frost);border:1px solid rgba(125,211,252,.35);border-radius:999px;padding:4px 10px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 12px}
-.tab{
-  border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--muted);
-  border-radius:12px; padding:11px 10px; font-weight:600; font-size:14px; cursor:pointer;
-}
-.tab.active{color:#1a0f0a;background:linear-gradient(135deg,#ff9f1c,var(--flame));border-color:transparent}
-.panel{display:none}
-.panel.active{display:block}
-.card{
-  background:linear-gradient(180deg,rgba(255,255,255,.07),transparent 42%), rgba(22,16,14,.88);
-  border:1px solid var(--line); border-radius:18px; padding:14px; margin-bottom:12px;
-  box-shadow:0 18px 40px rgba(0,0,0,.32);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-}
-.card h2{font-family:"Cormorant Garamond",serif;font-size:22px;margin:0 0 8px}
-.special{
-  position:relative; overflow:hidden; padding:0; border:1px solid rgba(244,194,122,.35);
-}
-.special img{width:100%;height:160px;object-fit:cover;display:block}
-.special .body{padding:12px 14px 14px}
-.badge-live{display:inline-block;background:rgba(232,93,4,.2);color:#ffd2a8;border:1px solid rgba(232,93,4,.45);font-size:10px;letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:3px 8px;margin-bottom:6px}
-.countdown{display:flex;gap:8px;margin-top:10px}
-.cd-box{flex:1;text-align:center;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:10px;padding:8px 4px}
-.cd-box b{display:block;font-size:18px;font-variant-numeric:tabular-nums}
-.cd-box span{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.menu-item{display:grid;grid-template-columns:78px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
-.menu-item:first-of-type{border-top:0;padding-top:0}
-.menu-item img{width:78px;height:78px;border-radius:12px;object-fit:cover}
-.menu-item h3{margin:0;font-size:15px;font-weight:600}
-.menu-item p{margin:3px 0 0;color:var(--muted);font-size:12px;line-height:1.35}
-.price{font-weight:700;color:var(--gold);font-size:14px}
-.qty{display:flex;align-items:center;gap:6px;margin-top:8px}
-.qty button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font-size:16px;cursor:pointer}
-.qty span{min-width:16px;text-align:center;font-weight:600}
-.scratch-wrap{position:relative;height:150px;border-radius:14px;overflow:hidden;touch-action:none;user-select:none}
-.scratch-prize{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#2a1810,#1a0f1a 55%,#0f2230);text-align:center;padding:12px}
-.scratch-prize strong{font-family:"Cormorant Garamond",serif;font-size:26px;color:var(--gold)}
-.scratch-prize span{color:var(--muted);font-size:12px;margin-top:4px}
-#scratchCanvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
-.meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;padding-bottom:12px;margin-bottom:4px;border-bottom:1px dashed var(--line)}
-.meta strong{display:block;color:var(--ink);font-size:14px;margin-top:2px}
-table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:6px}
-th:last-child,td:last-child{text-align:right}
-td{padding:9px 0;border-top:1px solid var(--line);font-size:14px;vertical-align:top}
-.item-note{display:block;color:var(--muted);font-size:11px;margin-top:2px}
-.row{display:flex;justify-content:space-between;padding:7px 0;color:var(--muted);font-size:14px}
-.row.total{margin-top:4px;padding-top:10px;border-top:1px solid var(--line);color:var(--ink);font-size:18px;font-weight:700}
-.btn{
-  display:block;width:100%;margin-top:12px;border:0;border-radius:14px;padding:14px 16px;
-  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
-}
-.btn-primary{color:#1a0f0a;background:linear-gradient(135deg,#ff9f1c,var(--flame));box-shadow:0 10px 24px rgba(232,93,4,.35)}
-.btn-ghost{color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line)}
-.btn:disabled{opacity:.7;cursor:default}
-.toast{
-  position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120%);
-  background:#111;border:1px solid rgba(34,197,94,.45);color:#bbf7d0;padding:12px 14px;border-radius:12px;
-  width:min(420px,92vw);font-size:13px;line-height:1.4;transition:transform .35s ease;z-index:40;box-shadow:0 12px 30px rgba(0,0,0,.45)
-}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.note{margin:10px 0 0;color:var(--muted);font-size:11px;text-align:center;line-height:1.45}
-footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-height:1.5}
-.hidden{display:none !important}
-.off{opacity:.45}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Outfit:wght@300;400;500;600;700&family=Bangers&family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Orbitron:wght@600;700&family=Pacifico&family=Special+Elite&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/site.css" />
 <link rel="stylesheet" href="css/themes.css" />
+<link rel="stylesheet" href="css/qr.css" />
+<script>try{var m=localStorage.getItem('ff-mode');if(m==='flame'||m==='frost')document.documentElement.setAttribute('data-mode',m);}catch(e){}</script>
 </head>
 <body>
-
 <div class="ff-particles" id="ffParticles" aria-hidden="true"></div>
 <div class="ff-overlay" id="ffOverlay" role="dialog" aria-modal="true" aria-labelledby="ffGreetTitle">
   <div class="ff-overlay-card" id="ffGreetCard">
@@ -133,18 +42,24 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
     <div id="ffGameHost"></div>
   </div>
 </div>
-<video class="bg-video" autoplay muted loop playsinline poster="img/logo.png" aria-hidden="true">
-  <source src="img/menu_bg.mp4" type="video/mp4" />
-</video>
-<div class="bg-scrim" aria-hidden="true"></div>
-<div class="wrap">
-  <header class="hero">
-    <img class="logo" src="img/logo.png" alt="Frost & Flame logo" />
-    <div class="brand">Frost &amp; Flame</div>
-    <p class="sub">Tark Limited · 194 Hackney Road, London E2 7QL</p>
-    <div class="pill">Prototype · no customer data stored</div>
-  </header>
+<header class="header">
+  <a class="logo" href="#top" aria-label="Frost &amp; Flame"><img src="img/logo-800.webp" alt="Frost &amp; Flame" /></a>
+  <nav class="nav" aria-label="Table">
+    <div class="mode-toggle" role="group" aria-label="Frost or Flame look">
+      <button type="button" data-mode="frost" aria-pressed="true">Frost</button>
+      <button type="button" data-mode="flame" aria-pressed="false">Flame</button>
+    </div>
+    <button class="btn btn-ghost cart-btn" type="button" id="headBill" aria-label="Bill">Bill <span class="cart-count" id="headCount">0</span></button>
+  </nav>
+</header>
 
+<main class="qr-main" id="top">
+  <section class="qr-hero" aria-label="Welcome">
+    <p class="eyebrow">194 Hackney Road · London E2</p>
+    <h1><span class="frost">Frost</span> <span class="amp">&amp;</span> <span class="flame">Flame</span></h1>
+    <p class="tagline">One kitchen. Two temperatures.</p>
+    <div class="qr-table"><span>Table <b id="heroTable">4</b></span><span>Bill <b id="heroBill">FF-1004</b></span></div>
+  </section>
 
   <p id="ffThemeGreet" class="hidden"></p>
   <div class="theme-bar hidden" id="ffThemeBar">
@@ -158,18 +73,18 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
   <div class="ff-lines" id="ffLines" aria-live="polite"></div>
   <div id="ffFeature" class="hidden"></div>
 
-  <div class="tabs" role="tablist">
-    <button class="tab active" id="tabMenu" type="button">Menu</button>
-    <button class="tab" id="tabBill" type="button">Bill</button>
+  <div class="qr-tabs" role="tablist">
+    <button class="qr-tab active" id="tabMenu" type="button">Menu</button>
+    <button class="qr-tab" id="tabBill" type="button">Bill</button>
   </div>
 
   <section class="panel active" id="panelMenu">
-    <div class="card special" id="weekendCard">
-      <img src="img/weekend.jpg" alt="Weekend limited dish" />
+    <div class="card special hidden" id="weekendCard">
+      <img src="img/weekend.jpg" alt="Weekend special" />
       <div class="body">
         <div class="badge-live" id="weekendBadge">Weekend only</div>
         <h2>Chai Affogato Stone</h2>
-        <p class="sub" style="margin:0">Limited pour — warm chai over rolled ice cream. Available Fri–Sun only.</p>
+        <p class="sub" id="weekendDesc" style="margin:0">Limited pour — warm chai over rolled ice cream. Available Fri–Sun only.</p>
         <div class="countdown" id="countdown" aria-live="polite">
           <div class="cd-box"><b id="cdD">0</b><span>Days</span></div>
           <div class="cd-box"><b id="cdH">0</b><span>Hours</span></div>
@@ -177,89 +92,26 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
           <div class="cd-box"><b id="cdS">0</b><span>Secs</span></div>
         </div>
         <p class="note" id="weekendNote" style="text-align:left"></p>
-        <div class="qty"><button type="button" data-add="weekend">+</button><span id="q-weekend">0</span><button type="button" data-sub="weekend">−</button><span class="price" style="margin-left:auto">£8.50</span></div>
+        <div class="qty-row"><span class="price" id="weekendPrice">£8.50</span><div class="qty"><button type="button" data-sub="weekend" aria-label="Remove one">−</button><span id="q-weekend">0</span><button type="button" data-add="weekend" aria-label="Add one">+</button></div></div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Menu</h2>
-      <div class="menu-item">
-        <img src="img/mutton_pulav.jpg" alt="Mutton pulav" />
+    <section class="section menu" id="menu" data-tone="frost" aria-labelledby="menu-title">
+      <div class="section-head">
         <div>
-          <h3>Mutton Pulav</h3>
-          <p>Bone-in mutton · fragrant rice · green chilli</p>
-          <div class="qty"><button type="button" data-add="pulav">+</button><span id="q-pulav">0</span><button type="button" data-sub="pulav">−</button></div>
+          <p class="kicker">The menu</p>
+          <h2 id="menu-title">Frost, flame, and everything between</h2>
         </div>
-        <div class="price">£9.99</div>
       </div>
-      <div class="menu-item">
-        <img src="img/stone.jpg" alt="Stone ice cream" />
-        <div>
-          <h3>Stone Ice Cream</h3>
-          <p>Mint Choc Chip · rolled fresh on stone</p>
-          <div class="qty"><button type="button" data-add="stone">+</button><span id="q-stone">0</span><button type="button" data-sub="stone">−</button></div>
-        </div>
-        <div class="price">£7.50</div>
+      <div class="tabs-wrap">
+        <div class="tabs" id="menu-tabs" role="tablist" aria-label="Menu categories"></div>
       </div>
-      <div class="menu-item">
-        <img src="img/pistachio.jpg" alt="Pistachio stone" />
-        <div>
-          <h3>Pistachio Stone</h3>
-          <p>Creamy pistachio · crushed nuts</p>
-          <div class="qty"><button type="button" data-add="pistachio">+</button><span id="q-pistachio">0</span><button type="button" data-sub="pistachio">−</button></div>
-        </div>
-        <div class="price">£7.90</div>
-      </div>
-      <div class="menu-item">
-        <img src="img/chilli_mango.jpg" alt="Chilli mango" />
-        <div>
-          <h3>Chilli Mango</h3>
-          <p>Sweet heat · summer favourite</p>
-          <div class="qty"><button type="button" data-add="mango">+</button><span id="q-mango">0</span><button type="button" data-sub="mango">−</button></div>
-        </div>
-        <div class="price">£7.90</div>
-      </div>
-      <div class="menu-item">
-        <img src="img/chaat.jpg" alt="Chaat" />
-        <div>
-          <h3>Flame Chaat</h3>
-          <p>Crisp · tangy · street-style</p>
-          <div class="qty"><button type="button" data-add="chaat">+</button><span id="q-chaat">0</span><button type="button" data-sub="chaat">−</button></div>
-        </div>
-        <div class="price">£6.50</div>
-      </div>
-      <div class="menu-item">
-        <img src="img/chai.jpg" alt="Masala chai" />
-        <div>
-          <h3>Masala Chai</h3>
-          <p>Hot · medium sweet</p>
-          <div class="qty"><button type="button" data-add="chai">+</button><span id="q-chai">0</span><button type="button" data-sub="chai">−</button></div>
-        </div>
-        <div class="price">£3.50</div>
-      </div>
-      <div class="menu-item">
-        <img src="img/lassi.jpg" alt="Lassi" />
-        <div>
-          <h3>Frost Lassi</h3>
-          <p>Cool yoghurt drink</p>
-          <div class="qty"><button type="button" data-add="lassi">+</button><span id="q-lassi">0</span><button type="button" data-sub="lassi">−</button></div>
-        </div>
-        <div class="price">£4.20</div>
-      </div>
-      <div class="menu-item">
-        <img src="img/gulab.jpg" alt="Gulab" />
-        <div>
-          <h3>Gulab Bite</h3>
-          <p>Warm syrup · soft centre</p>
-          <div class="qty"><button type="button" data-add="gulab">+</button><span id="q-gulab">0</span><button type="button" data-sub="gulab">−</button></div>
-        </div>
-        <div class="price">£4.80</div>
-      </div>
+      <div class="menu-grid" id="menu-grid"><p class="menu-empty">Loading the menu…</p></div>
       <button class="btn btn-primary" id="toBillBtn" type="button">Add to bill · continue</button>
-      <p class="note">Quantities stay only on this phone until you close the page. Nothing is uploaded.</p>
-    </div>
+      <p class="note" style="text-align:center;font-style:normal">Quantities stay only on this phone until you close the page. Nothing is uploaded.</p>
+    </section>
 
-
+    <div class="qr-wrap">
     <div class="card ff-facts" id="ffFacts">
       <div class="label">While you wait · interesting bite</div>
       <div class="fact" id="ffFactText">Stone ice cream is rolled fresh on a frozen plate.</div>
@@ -278,10 +130,11 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
       <button class="btn btn-ghost hidden" id="resetScratch" type="button">New scratch card</button>
       <p class="note" id="scratchNote" style="text-align:left"></p>
     </div>
+    </div>
   </section>
 
   <section class="panel" id="panelBill">
-    <div class="card">
+    <div class="qr-wrap"><div class="card">
       <div class="meta">
         <div>Table<strong id="tableNo">Table 4</strong></div>
         <div style="text-align:right">Bill<strong id="billNo">FF-SAMPLE-001</strong></div>
@@ -304,13 +157,19 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
         <span>Thanks for sharing your table with Frost &amp; Flame.</span>
       </div>
     </div>
+    </div>
   </section>
+</main>
 
-  <footer>
-    One QR per table · Menu + Bill<br />
-    Frost &amp; Flame prototype · free static page
-  </footer>
+<div class="order-bar is-empty" id="orderBar">
+  <button class="btn btn-frost" type="button" id="barBill"><span id="barText">Your bill is empty</span><span id="barTotal">£0.00</span></button>
 </div>
+
+<footer class="qr-footer">
+  Frost &amp; Flame · Tark Limited · 194 Hackney Road, London E2 7QL<br />
+  Open 11am–11pm daily · One QR per table · Menu + Bill<br />
+  Tell staff about any allergies before you order.
+</footer>
 <div class="toast" id="toast"></div>
 
 <script src="js/config.js"></script>
@@ -318,369 +177,7 @@ footer{margin-top:14px;text-align:center;color:var(--muted);font-size:11px;line-
 <script src="js/themes.js"></script>
 <script src="js/games.js"></script>
 <script src="js/experience.js"></script>
-<script>
-(function () {
-  var MENU = {
-    weekend: { name: 'Chai Affogato Stone', note: 'Weekend limited', price: 8.5, qtyId: 'q-weekend', special: 'weekend', image: 'img/weekend.jpg', tags: ['couple','share','solo','kids'] },
-    pulav: { name: 'Mutton Pulav', note: 'Bone-in · fragrant rice', price: 9.99, qtyId: 'q-pulav', special: '', image: 'img/mutton_pulav.jpg', tags: ['solo','share','group','platter'] },
-    stone: { name: 'Stone Ice Cream', note: 'Mint Choc Chip', price: 7.5, qtyId: 'q-stone', special: '', image: 'img/stone.jpg', tags: ['solo','couple','share','kids'] },
-    pistachio: { name: 'Pistachio Stone', note: 'Crushed nuts', price: 7.9, qtyId: 'q-pistachio', special: '', image: 'img/pistachio.jpg', tags: ['solo','couple'] },
-    mango: { name: 'Chilli Mango', note: 'Sweet heat', price: 7.9, qtyId: 'q-mango', special: '', image: 'img/chilli_mango.jpg', tags: ['solo','couple','kids'] },
-    chaat: { name: 'Flame Chaat', note: 'Street-style', price: 6.5, qtyId: 'q-chaat', special: '', image: 'img/chaat.jpg', tags: ['solo','share','group','friends'] },
-    chai: { name: 'Masala Chai', note: 'Hot · medium sweet', price: 3.5, qtyId: 'q-chai', special: '', image: 'img/chai.jpg', tags: ['solo','couple','group'] },
-    lassi: { name: 'Frost Lassi', note: 'Cool yoghurt', price: 4.2, qtyId: 'q-lassi', special: '', image: 'img/lassi.jpg', tags: ['solo','couple','kids'] },
-    gulab: { name: 'Gulab Bite', note: 'Warm syrup', price: 4.8, qtyId: 'q-gulab', special: '', image: 'img/gulab.jpg', tags: ['couple','share','kids'] }
-  };
-  var qty = { weekend:0, pulav:0, stone:2, pistachio:0, mango:0, chaat:0, chai:1, lassi:0, gulab:0 };
-  var params = new URLSearchParams(location.search);
-  var table = params.get('table') || '4';
-  var bill = params.get('bill') || ('FF-' + String(1000 + Number(table)).slice(-4));
-  document.getElementById('tableNo').textContent = 'Table ' + table;
-  document.getElementById('billNo').textContent = bill;
-
-  function money(n){ return '£' + n.toFixed(2); }
-
-  function menuKeysOrdered(){
-    var keys = Object.keys(MENU).filter(function(k){ return MENU[k].special !== 'weekend'; });
-    if (window.FFExperience && FFExperience.getThemeId()) {
-      return FFExperience.sortKeys(keys, MENU);
-    }
-    return keys;
-  }
-
-  function rebuildMenuList(){
-    var listCard = document.querySelector('#panelMenu .card:not(.special):not(.ff-facts)');
-    // prefer the card that contains #toBillBtn or h2 Menu
-    var cards = document.querySelectorAll('#panelMenu .card');
-    listCard = null;
-    cards.forEach(function(c){
-      if (c.classList.contains('special') || c.classList.contains('ff-facts')) return;
-      if (c.querySelector('#toBillBtn') || (c.querySelector('h2') && c.querySelector('h2').textContent.trim() === 'Menu')) listCard = c;
-    });
-    if (!listCard) return;
-    var theme = window.FFExperience && FFExperience.getTheme();
-    var keys = menuKeysOrdered();
-    var html = '<h2>Menu</h2>' + keys.map(function(k){
-      var m = MENU[k];
-      var badge = (window.FFExperience && theme) ? FFExperience.badgeHtml(theme, k, MENU) : '';
-      return '<div class="menu-item" data-id="'+k+'">'+
-        '<img src="'+(m.image||'img/logo.png')+'" alt="" />'+
-        '<div><h3>'+m.name+'</h3>'+badge+'<p>'+(m.note||'')+'</p>'+
-        '<div class="qty"><button type="button" data-add="'+k+'">+</button>'+
-        '<span id="q-'+k+'">'+(qty[k]||0)+'</span>'+
-        '<button type="button" data-sub="'+k+'">−</button></div></div>'+
-        '<div class="price">£'+Number(m.price).toFixed(2)+'</div></div>';
-    }).join('') +
-    '<button class="btn btn-primary" id="toBillBtn" type="button">Add to bill · continue</button>'+
-    '<p class="note">Quantities stay only on this phone until you close the page. Nothing is uploaded.</p>';
-    listCard.innerHTML = html;
-    var toBill = document.getElementById('toBillBtn');
-    if (toBill) toBill.onclick = function(){ renderBill(); showTab('bill'); };
-  }
-
-  function renderQty(){
-    Object.keys(MENU).forEach(function(k){
-      var el = document.getElementById(MENU[k].qtyId);
-      if (el) el.textContent = String(qty[k] || 0);
-    });
-  }
-  function lines(){
-    return Object.keys(MENU).filter(function(k){ return (qty[k]||0) > 0; }).map(function(k){
-      var m = MENU[k];
-      return { key:k, name:m.name, note:m.note, qty:qty[k], price:m.price, line: m.price * qty[k] };
-    });
-  }
-  function renderBill(){
-    var body = document.getElementById('billBody');
-    var ls = lines();
-    if (!ls.length) {
-      body.innerHTML = '<tr><td colspan="3" style="color:var(--muted);border:0;padding:12px 0">No items yet — add from Menu.</td></tr>';
-      document.getElementById('subtotal').textContent = money(0);
-      document.getElementById('total').textContent = money(0);
-      return;
-    }
-    body.innerHTML = ls.map(function(l){
-      return '<tr><td><span class="item-name">'+l.name+'</span><span class="item-note">'+l.note+'</span></td><td>'+l.qty+'</td><td>'+money(l.line)+'</td></tr>';
-    }).join('');
-    var sum = ls.reduce(function(a,b){ return a + b.line; }, 0);
-    document.getElementById('subtotal').textContent = money(sum);
-    document.getElementById('total').textContent = money(sum);
-  }
-
-  // Event delegation so live menu rebuilds keep working
-  document.getElementById('panelMenu').addEventListener('click', function(e){
-    var add = e.target.closest('[data-add]');
-    var sub = e.target.closest('[data-sub]');
-    if (add) {
-      var k = add.getAttribute('data-add');
-      if (add.disabled) return;
-      qty[k]=(qty[k]||0)+1; renderQty(); renderBill();
-    } else if (sub) {
-      var k2 = sub.getAttribute('data-sub');
-      if (sub.disabled) return;
-      qty[k2]=Math.max(0,(qty[k2]||0)-1); renderQty(); renderBill();
-    }
-  });
-
-  function showTab(which){
-    var menu = which === 'menu';
-    document.getElementById('tabMenu').classList.toggle('active', menu);
-    document.getElementById('tabBill').classList.toggle('active', !menu);
-    document.getElementById('panelMenu').classList.toggle('active', menu);
-    document.getElementById('panelBill').classList.toggle('active', !menu);
-  }
-  document.getElementById('tabMenu').onclick = function(){ showTab('menu'); };
-  document.getElementById('tabBill').onclick = function(){ showTab('bill'); renderBill(); };
-  document.getElementById('toBillBtn').onclick = function(){ renderBill(); showTab('bill'); };
-
-  // Weekend countdown: to end of current/next Sunday 23:59 London
-  function londonNow(){
-    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/London' }));
-  }
-  function endOfWeekend(d){
-    // Find upcoming Sunday 23:59:59 of this week (or today if Sunday)
-    var day = d.getDay(); // 0 Sun
-    var end = new Date(d.getFullYear(), d.getMonth(), d.getDate() + ((7 - day) % 7), 23, 59, 59);
-    // If Mon-Thu, weekend special is "opens Friday" — countdown to Friday 00:00
-    return end;
-  }
-  function updateWeekend(){
-    var now = londonNow();
-    var day = now.getDay(); // 0 Sun ... 5 Fri 6 Sat
-    var active = (day === 5 || day === 6 || day === 0);
-    var badge = document.getElementById('weekendBadge');
-    var note = document.getElementById('weekendNote');
-    var target;
-    if (active) {
-      badge.textContent = 'Live now · weekend only';
-      // end Sunday 23:59
-      var daysToSun = (7 - day) % 7;
-      target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToSun, 23, 59, 59);
-      note.textContent = 'Order before the timer hits zero — special ends Sunday night.';
-      document.querySelectorAll('#weekendCard [data-add],#weekendCard [data-sub]').forEach(function(b){ b.disabled=false; });
-      document.getElementById('weekendCard').classList.remove('off');
-    } else {
-      badge.textContent = 'Opens Friday';
-      var daysToFri = (5 - day + 7) % 7;
-      target = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToFri, 0, 0, 0);
-      note.textContent = 'Weekend special is locked until Friday. Countdown to open.';
-      Object.keys(MENU).forEach(function(k){ if (MENU[k].special === 'weekend' || k === 'weekend') qty[k]=0; });
-      document.querySelectorAll('#weekendCard [data-add],#weekendCard [data-sub]').forEach(function(b){ b.disabled=true; });
-      document.getElementById('weekendCard').classList.add('off');
-    }
-    var diff = Math.max(0, target - now);
-    var s = Math.floor(diff/1000);
-    document.getElementById('cdD').textContent = String(Math.floor(s/86400));
-    document.getElementById('cdH').textContent = String(Math.floor((s%86400)/3600));
-    document.getElementById('cdM').textContent = String(Math.floor((s%3600)/60));
-    document.getElementById('cdS').textContent = String(s%60);
-  }
-  updateWeekend();
-  setInterval(updateWeekend, 1000);
-
-  // Scratch card — server pool when API is live; local random fallback otherwise
-  var fallbackPrizes = [
-    { t: '10% off drinks', s: 'Valid on this table today' },
-    { t: 'Free Masala Chai', s: 'One cup with any stone dessert' },
-    { t: '£2 off bill', s: 'Show staff before paying' },
-    { t: 'Free topping', s: 'On any stone ice cream' },
-    { t: 'Buy 1 get 1 chai', s: 'Same size · same visit' },
-    { t: 'Mystery scoop', s: 'Staff picks a surprise flavour' }
-  ];
-  var canvas = document.getElementById('scratchCanvas');
-  var ctx = canvas.getContext('2d');
-  var serverScratch = false;
-  function sizeCanvas(){
-    var wrap = document.getElementById('scratchWrap');
-    var w = wrap.clientWidth, h = wrap.clientHeight;
-    canvas.width = w * 2; canvas.height = h * 2;
-    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
-    ctx.setTransform(2,0,0,2,0,0);
-  }
-  function paintFoil(){
-    sizeCanvas();
-    var g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
-    g.addColorStop(0,'#b8c0c8'); g.addColorStop(.5,'#e8eef4'); g.addColorStop(1,'#9aa7b3');
-    ctx.fillStyle = g; ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = 'rgba(30,30,40,.55)';
-    ctx.font = '600 16px Outfit, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Scratch here for your offer', canvas.width/4, canvas.height/4);
-  }
-  function showPrize(title, sub, code){
-    document.getElementById('prizeText').textContent = title;
-    document.getElementById('prizeSub').textContent = sub;
-    var codeEl = document.getElementById('prizeCode');
-    if (code) { codeEl.textContent = 'Code ' + code; codeEl.style.display = 'block'; }
-    else { codeEl.textContent = ''; }
-  }
-  function pickFallbackPrize(){
-    var p = fallbackPrizes[Math.floor(Math.random()*fallbackPrizes.length)];
-    showPrize(p.t, p.s, '');
-    document.getElementById('scratchNote').textContent = 'Offline demo card — not redeemable.';
-    document.getElementById('resetScratch').classList.remove('hidden');
-  }
-  function scratch(x,y){
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath(); ctx.arc(x,y,22,0,Math.PI*2); ctx.fill();
-    ctx.globalCompositeOperation = 'source-over';
-  }
-  var drawing=false;
-  function pos(e){
-    var r = canvas.getBoundingClientRect();
-    var t = (e.touches && e.touches[0]) || e;
-    return { x: t.clientX - r.left, y: t.clientY - r.top };
-  }
-  canvas.addEventListener('mousedown', function(e){ drawing=true; var p=pos(e); scratch(p.x,p.y); });
-  canvas.addEventListener('mousemove', function(e){ if(!drawing) return; var p=pos(e); scratch(p.x,p.y); });
-  window.addEventListener('mouseup', function(){ drawing=false; });
-  canvas.addEventListener('touchstart', function(e){ e.preventDefault(); drawing=true; var p=pos(e); scratch(p.x,p.y); }, {passive:false});
-  canvas.addEventListener('touchmove', function(e){ e.preventDefault(); if(!drawing) return; var p=pos(e); scratch(p.x,p.y); }, {passive:false});
-  canvas.addEventListener('touchend', function(){ drawing=false; });
-  document.getElementById('resetScratch').onclick = function(){
-    if (serverScratch) return;
-    pickFallbackPrize(); paintFoil();
-  };
-  function initScratch(){
-    if (!window.FFApi || !FFApi.ready()) {
-      pickFallbackPrize(); paintFoil(); return;
-    }
-    FFApi.call({ action:'scratch', billId: bill, table: table }).then(function(r){
-      serverScratch = true;
-      var p = r.prize || {};
-      showPrize(p.title || '…', p.subtitle || 'Show staff', p.code || '');
-      document.getElementById('scratchNote').textContent = r.already
-        ? 'Already drawn for this bill — show the code to staff.'
-        : 'One card for this bill. Staff can verify the code before discount.';
-      document.getElementById('resetScratch').classList.add('hidden');
-      paintFoil();
-    }).catch(function(){
-      pickFallbackPrize(); paintFoil();
-    });
-  }
-  initScratch();
-  window.addEventListener('resize', function(){ paintFoil(); });
-
-  function toast(msg){
-    var el = document.getElementById('toast');
-    el.textContent = msg; el.classList.add('show');
-    setTimeout(function(){ el.classList.remove('show'); }, 4200);
-  }
-
-  // Live menu from backend (fallback = hardcoded MENU + HTML already on page)
-  function applyLiveMenu(items){
-    if (!items || !items.length) return;
-    var next = {};
-    var qtyKeep = qty;
-    items.forEach(function(it){
-      next[it.id] = {
-        name: it.name,
-        note: it.note || '',
-        price: Number(it.price) || 0,
-        qtyId: 'q-' + it.id,
-        image: it.image || '',
-        special: it.special || '',
-        tags: it.tags || (window.FFThemes && FFThemes.DEFAULT_TAGS[it.id]) || []
-      };
-      if (typeof qtyKeep[it.id] !== 'number') qtyKeep[it.id] = 0;
-    });
-    // rebuild menu list (non-weekend cards)
-    var listCard = document.querySelector('#panelMenu .card:not(.special)');
-    if (!listCard) return;
-    var weekend = items.filter(function(i){ return i.special === 'weekend'; })[0];
-    var regular = items.filter(function(i){ return i.special !== 'weekend'; });
-    if (weekend) {
-      var wc = document.getElementById('weekendCard');
-      if (wc) {
-        wc.classList.remove('hidden');
-        var img = wc.querySelector('img'); if (img && weekend.image) img.src = weekend.image;
-        var h2 = wc.querySelector('h2'); if (h2) h2.textContent = weekend.name;
-        var price = wc.querySelector('.price'); if (price) price.textContent = '£' + Number(weekend.price).toFixed(2);
-        var q = document.getElementById('q-weekend');
-        if (q) { q.id = 'q-' + weekend.id; }
-        wc.querySelectorAll('[data-add],[data-sub]').forEach(function(b){
-          if (b.hasAttribute('data-add')) b.setAttribute('data-add', weekend.id);
-          if (b.hasAttribute('data-sub')) b.setAttribute('data-sub', weekend.id);
-        });
-      }
-    }
-    var html = '<h2>Menu</h2>' + regular.map(function(it){
-      return '<div class="menu-item">'+
-        '<img src="'+escAttr(it.image||'img/logo.png')+'" alt="" />'+
-        '<div><h3>'+escHtml(it.name)+'</h3><p>'+escHtml(it.note||'')+'</p>'+
-        '<div class="qty"><button type="button" data-add="'+escAttr(it.id)+'">+</button>'+
-        '<span id="q-'+escAttr(it.id)+'">'+(qtyKeep[it.id]||0)+'</span>'+
-        '<button type="button" data-sub="'+escAttr(it.id)+'">−</button></div></div>'+
-        '<div class="price">£'+Number(it.price).toFixed(2)+'</div></div>';
-    }).join('') +
-    '<button class="btn btn-primary" id="toBillBtn" type="button">Add to bill · continue</button>'+
-    '<p class="note">Quantities stay only on this phone until you close the page. Nothing is uploaded.</p>';
-    listCard.innerHTML = html;
-    MENU = next;
-    qty = qtyKeep;
-    rebuildMenuList();
-    renderQty(); renderBill();
-  }
-  function escHtml(s){ return String(s).replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);}); }
-  function escAttr(s){ return escHtml(s).replace(/`/g,''); }
-  if (window.FFApi && FFApi.ready()) {
-    FFApi.call({ action:'menu' }).then(function(r){
-      if (r && r.items) applyLiveMenu(r.items);
-    }).catch(function(){ /* keep hardcoded fallback */ });
-  }
-
-  document.getElementById('orderBtn').onclick = function(){
-    var ls = lines();
-    if (!ls.length) { toast('Add dishes on the Menu tab first.'); return; }
-    var summary = ls.map(function(l){ return l.qty + '× ' + l.name; }).join(', ');
-    var total = ls.reduce(function(a,b){ return a+b.line; },0);
-    var msg = 'Frost & Flame · Table ' + table + ' · ' + summary + ' · Total ' + money(total);
-    // Demo staff ping via free ntfy topic (no customer identity stored on this page)
-    fetch('https://ntfy.sh/frost-flame-table-demo', {
-      method: 'POST',
-      body: msg,
-      headers: { 'Title': 'New table order (demo)', 'Priority': 'high', 'Tags': 'ice_cream,bell' }
-    }).then(function(){
-      toast('Demo staff ping sent. On a staff phone, open ntfy and follow topic: frost-flame-table-demo');
-    }).catch(function(){
-      toast('Order ready on screen (offline demo). Staff topic would be: frost-flame-table-demo');
-    });
-    if (window.Notification && Notification.permission === 'granted') {
-      new Notification('Frost & Flame order', { body: msg });
-    } else if (window.Notification && Notification.permission !== 'denied') {
-      Notification.requestPermission();
-    }
-  };
-
-  document.getElementById('payBtn').onclick = function(){
-    this.disabled = true; this.textContent = 'Paid (demo)';
-    toast('Prototype only — no card details taken, nothing saved.');
-  };
-
-  function renderMenu(){ rebuildMenuList(); renderQty(); }
-
-  if (window.FFExperience) {
-    var greetEl = document.getElementById('ffThemeGreet');
-    FFExperience.init({
-      getMenu: function(){ return MENU; },
-      getQty: function(){ return qty; },
-      setQty: function(q){ qty = q; },
-      renderMenu: function(){
-        renderMenu();
-        if (greetEl) {
-          var th = FFExperience.getTheme();
-          if (th) { greetEl.textContent = th.greeting; greetEl.classList.remove('hidden'); }
-        }
-      },
-      renderBill: renderBill,
-      toast: toast
-    });
-  } else {
-    rebuildMenuList();
-  }
-
-  renderQty(); renderBill();
-})();
-</script>
+<script src="js/menu-data.js"></script>
+<script src="js/qr-menu.js"></script>
 </body>
 </html>
