@@ -10,9 +10,9 @@
 <link rel="apple-touch-icon" href="img/logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/admin.css" />
-<script src="js/config.js"></script>
-<script src="js/api.js"></script>
+<link rel="stylesheet" href="css/admin.css?v=20261115c" />
+<script src="js/config.js?v=20261115c"></script>
+<script src="js/api.js?v=20261115c"></script>
 </head>
 <body>
 <div class="wrap">
@@ -74,6 +74,33 @@
         <p class="hint" id="menuHint"></p>
         <div id="menuList"><p class="muted">Loading…</p></div>
       </div>
+    </div>
+
+    <div class="panel" id="panel-tables">
+      <div id="tablesUnavailable" class="card hidden">
+        <h2>Table orders</h2>
+        <p class="hint" style="font-size:14px">Table orders isn't on the server yet. Once it's switched on, staff will take orders here and customers won't be able to change them.</p>
+      </div>
+      <div id="tablesHome">
+        <div class="card">
+          <h2>Open tables</h2>
+          <p class="hint">These are the official bills. Customers cannot change them from their phones.</p>
+          <div id="openTables"><p class="muted">Loading…</p></div>
+        </div>
+        <div class="card">
+          <h2>Start a table</h2>
+          <div class="table-pad" id="tablePad"></div>
+          <label for="tableCustom">Or type a table</label>
+          <input id="tableCustom" placeholder="e.g. 17 or takeaway" maxlength="16" autocapitalize="off" autocomplete="off" />
+          <button class="btn btn-primary" id="tableStartBtn" type="button">Start this table</button>
+          <p class="msg" id="tableStartMsg"></p>
+        </div>
+        <div class="card">
+          <h2>Recently paid</h2>
+          <div id="recentTables" class="muted">—</div>
+        </div>
+      </div>
+      <div id="tableOrderView" class="hidden"></div>
     </div>
 
     <div class="panel" id="panel-codes">
@@ -148,6 +175,7 @@
 
 <div class="sheet-bg hidden" id="sheetBg"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status"></div>
-<script src="js/admin.js"></script>
+<div id="printBill" class="print-bill" hidden></div>
+<script src="js/admin.js?v=20261115c"></script>
 </body>
 </html>

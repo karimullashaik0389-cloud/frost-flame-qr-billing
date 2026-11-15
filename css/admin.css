@@ -79,3 +79,36 @@ select option{background:#16100e}
 .sm-select{width:auto;padding:8px 10px;font-size:13px;border-radius:10px}
 .lockedline{color:#fde68a}
 #dPick{display:inline-block;width:auto;margin:4px 0 0;padding:8px 14px}
+
+/* Table orders – large tap targets for staff phones */
+.table-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 12px}
+.tbtn{min-height:52px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font:inherit;font-size:18px;font-weight:700;cursor:pointer}
+.tbtn.open{border-color:rgba(244,194,122,.55);color:var(--gold);background:rgba(244,194,122,.08)}
+.trow,.rrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0;border-top:1px solid var(--line);cursor:pointer}
+.trow:first-child,.rrow:first-child{border-top:0}
+.trow .tot,.rrow .tot{font-weight:700;color:var(--gold);font-size:16px;white-space:nowrap}
+.trow .nm,.rrow .nm{font-weight:600;font-size:16px}
+.oline{padding:12px 0;border-top:1px solid var(--line)}
+.oline:first-child{border-top:0}
+.oline .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.oline .nm{font-weight:600;font-size:15px}
+.oline.gone{opacity:.5}
+.oline.gone .nm{text-decoration:line-through}
+.add-dish{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.add-dish:first-child{border-top:0}
+.add-dish .nm{font-weight:600;font-size:15px}
+.btn.add{min-width:52px;min-height:44px;margin:0;padding:8px 14px;font-size:20px;line-height:1}
+.size-pick{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.size-pick .btn{margin:0}
+.bill-box{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.bill-box .bl{display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:15px}
+.bill-box .grand{font-size:20px;font-weight:700;color:var(--gold);border-top:1px solid var(--line);margin-top:8px;padding-top:10px;display:flex;justify-content:space-between}
+.order-head .tot{font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:700;color:var(--gold);margin:0}
+@media print{
+  body>*{visibility:hidden}
+  #printBill, #printBill *{visibility:visible}
+  #printBill{display:block!important;position:absolute;inset:0;width:100%;background:#fff;color:#111;padding:24px;border:0}
+  #printBill h1{color:#111;font-size:28px;margin:0 0 6px}
+  #printBill .bl,#printBill .grand{color:#111}
+  #printBill .grand{color:#111}
+}

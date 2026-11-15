@@ -11,6 +11,7 @@
     'img/chaat.jpg', 'img/chai.jpg', 'img/lassi.jpg', 'img/gulab.jpg', 'img/logo.png'];
   var TABS = [
     { id: 'menu', label: 'Menu', perm: 'menu.view' },
+    { id: 'tables', label: 'Tables', perm: 'orders.view' },
     { id: 'codes', label: 'Codes', perm: 'codes.redeem' },
     { id: 'scratch', label: 'Scratch', perm: 'scratch.view' },
     { id: 'people', label: 'People', perm: 'people.manage' },
@@ -21,7 +22,9 @@
     'menu.availability': 'mark dishes available / out of stock', 'menu.edit': 'edit dish details and photos',
     'menu.price': 'change prices', 'menu.add': 'add dishes', 'menu.delete': 'delete dishes',
     'codes.redeem': 'check and use scratch codes', 'scratch.view': 'see the scratch pool',
-    'scratch.settings': 'change scratch odds', 'activity.view': 'read the activity log', 'people.manage': 'manage people'
+    'scratch.settings': 'change scratch odds', 'activity.view': 'read the activity log', 'people.manage': 'manage people',
+    'orders.view': 'see table orders', 'orders.add': 'add dishes to a table',
+    'orders.remove': 'remove a dish from a table', 'orders.settle': 'settle a table and mark it paid'
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -115,7 +118,10 @@
     show('loginView', false); show('changeView', false); show('appView', true);
     $('whoLine').textContent = me.displayName + ' · ' + (me.role === 'owner' ? 'Owner' : 'Employee');
     var nav = $('tabs');
-    nav.innerHTML = TABS.filter(function (t) { return !t.perm || can(t.perm); }).map(function (t) {
+    nav.innerHTML = TABS.filter(function (t) {
+      if (t.id === 'tables' && me.perms && !('orders.view' in me.perms)) return true;
+      return !t.perm || can(t.perm);
+    }).map(function (t) {
       return '<button class="tab" data-tab="' + t.id + '" type="button">' + t.label + '</button>';
     }).join('');
     nav.querySelectorAll('.tab').forEach(function (b) { b.onclick = function () { openTab(b.getAttribute('data-tab')); }; });
@@ -134,6 +140,7 @@
     if (id === 'scratch') loadScratch();
     if (id === 'people') loadPeople();
     if (id === 'activity') loadActivity();
+    if (id === 'tables') loadTables();
   }
   document.querySelectorAll('[data-eye]').forEach(function (b) {
     b.onclick = function () { var i = $(b.getAttribute('data-eye')); var t = i.type === 'password'; i.type = t ? 'text' : 'password'; b.textContent = t ? 'Hide' : 'Show'; };
@@ -450,6 +457,274 @@
     }).catch(function (e) { toast(e.message, true); });
   }
   $('actWho').onchange = loadActivity;
+
+
+  /* ---------- table orders ---------- */
+  var currentOrder = null, ordersReady = null, lastOrders = { open: [], recent: [] };
+  function splitDishName(name) {
+    var i = String(name || '').indexOf(' · ');
+    return i > 0 ? { base: name.slice(0, i), size: name.slice(i + 3) } : { base: String(name || ''), size: '' };
+  }
+  function ordersUnsupported(e) {
+    return !!(e && (e.code === 'unknown_action' || /Unknown action/i.test(String(e.message || ''))));
+  }
+  function showTablesUnavailable() {
+    ordersReady = false;
+    show('tablesHome', false);
+    show('tableOrderView', false);
+    show('tablesUnavailable', true);
+  }
+  function activeLines(order) {
+    return (order && order.lines || []).filter(function (l) { return !l.removedAt; });
+  }
+  function fillTablePad(open) {
+    var pad = $('tablePad');
+    if (!pad) return;
+    var openSet = {};
+    (open || []).forEach(function (o) { openSet[String(o.table)] = o; });
+    if (!pad.childElementCount) {
+      var html = '';
+      for (var n = 1; n <= 16; n++) html += '<button type="button" class="tbtn" data-table="' + n + '">' + n + '</button>';
+      pad.innerHTML = html;
+      pad.querySelectorAll('.tbtn').forEach(function (b) {
+        b.onclick = function () { startTable(b.getAttribute('data-table')); };
+      });
+    }
+    pad.querySelectorAll('.tbtn').forEach(function (b) {
+      b.classList.toggle('open', !!openSet[b.getAttribute('data-table')]);
+    });
+  }
+  function renderTables(data) {
+    lastOrders = data || lastOrders;
+    show('tablesUnavailable', false);
+    if (currentOrder) {
+      show('tablesHome', false);
+      show('tableOrderView', true);
+      return;
+    }
+    var open = lastOrders.open || [];
+    $('openTables').innerHTML = open.map(function (o) {
+      return '<div class="trow" data-order="' + esc(o.id) + '" role="button" tabindex="0">' +
+        '<div><div class="nm">Table ' + esc(o.table) + '</div>' +
+        '<div class="muted">' + (o.itemCount ? esc(o.summary || (o.itemCount + ' items')) : 'No dishes yet') +
+        ' · opened by ' + esc(o.openedBy) + '</div></div>' +
+        '<div class="tot">' + money(o.total) + '</div></div>';
+    }).join('') || '<p class="muted">No open tables. Start one below.</p>';
+    $('openTables').querySelectorAll('[data-order]').forEach(function (el) {
+      el.onclick = function () { openExisting(el.getAttribute('data-order')); };
+    });
+    var recent = lastOrders.recent || [];
+    $('recentTables').innerHTML = recent.map(function (o) {
+      return '<div class="rrow" data-order="' + esc(o.id) + '" role="button" tabindex="0">' +
+        '<div><div class="nm">Table ' + esc(o.table) + ' <span class="badge ok">Paid</span></div>' +
+        '<div class="muted">by ' + esc(o.closedBy) + (o.closedAt ? ' · ' + esc(o.closedAt) : '') + '</div></div>' +
+        '<div class="tot">' + money(o.total) + '</div></div>';
+    }).join('') || 'None yet';
+    $('recentTables').querySelectorAll('[data-order]').forEach(function (el) {
+      el.onclick = function () { openExisting(el.getAttribute('data-order')); };
+    });
+    fillTablePad(open);
+    show('tableOrderView', false);
+    show('tablesHome', true);
+  }
+  function loadTables() {
+    if (ordersReady === false) { showTablesUnavailable(); return; }
+    if (menuItems.length === 0) loadMenu();
+    return api({ action: 'ordersList' }).then(function (r) {
+      ordersReady = true;
+      renderTables(r);
+    }).catch(function (e) {
+      if (ordersUnsupported(e)) showTablesUnavailable();
+      else toast(e.message, true);
+    });
+  }
+  function startTable(table) {
+    $('tableStartMsg').textContent = '';
+    busy($('tableStartBtn'), true);
+    api({ action: 'orderOpen', table: table }).then(function (r) {
+      currentOrder = r.order;
+      renderOrderView();
+    }).catch(function (e) {
+      if (ordersUnsupported(e)) showTablesUnavailable();
+      else { $('tableStartMsg').textContent = e.message; toast(e.message, true); }
+    }).then(function () { busy($('tableStartBtn'), false); });
+  }
+  function openExisting(id) {
+    api({ action: 'orderGet', orderId: id }).then(function (r) {
+      currentOrder = r.order;
+      renderOrderView();
+    }).catch(function (e) {
+      if (ordersUnsupported(e)) showTablesUnavailable();
+      else toast(e.message, true);
+    });
+  }
+  $('tableStartBtn').onclick = function () {
+    var t = $('tableCustom').value.trim();
+    if (!t) { $('tableStartMsg').textContent = 'Type a table number, or tap one above'; return; }
+    startTable(t);
+  };
+  $('tableCustom').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); $('tableStartBtn').click(); }
+  });
+
+  function dishGroups(list) {
+    var groups = [], index = {};
+    (list || []).forEach(function (it) {
+      var sp = splitDishName(it.name), g = sp.size ? index[sp.base] : null;
+      if (!g) { g = { base: sp.base, items: [] }; groups.push(g); if (sp.size) index[sp.base] = g; }
+      g.items.push(it);
+    });
+    return groups;
+  }
+  function renderOrderView() {
+    var o = currentOrder;
+    if (!o) { show('tableOrderView', false); show('tablesHome', true); return; }
+    show('tablesUnavailable', false);
+    show('tablesHome', false);
+    show('tableOrderView', true);
+    var paid = o.status === 'paid';
+    var lines = o.lines || [];
+    var active = activeLines(o);
+    var lineHtml = lines.map(function (l) {
+      var gone = !!l.removedAt;
+      return '<div class="oline' + (gone ? ' gone' : '') + '" data-line="' + esc(l.id) + '">' +
+        '<div class="top"><div><div class="nm">' + l.qty + '× ' + esc(l.name) + (l.size && String(l.name).indexOf(l.size) < 0 ? ' · ' + esc(l.size) : '') + '</div>' +
+        '<div class="muted">' + money(l.unitPrice) + ' each · added by ' + esc(l.addedBy) +
+        (gone ? ' · removed by ' + esc(l.removedBy) + (l.removeReason ? ' (' + esc(l.removeReason) + ')' : '') : '') + '</div></div>' +
+        '<div class="tot">' + money(l.lineTotal) + '</div></div>' +
+        (!gone && !paid && can('orders.remove') ? '<button class="btn btn-danger sm" data-rm="' + esc(l.id) + '" type="button">Remove</button>' : '') +
+        '</div>';
+    }).join('') || '<p class="muted">No dishes yet. Add from the list below.</p>';
+    var canAdd = !paid && can('orders.add');
+    $('tableOrderView').innerHTML =
+      '<div class="card order-head">' +
+        '<div class="topbar"><button class="btn btn-ghost sm" id="ordBack" type="button">All tables</button>' +
+        '<span class="badge ' + (paid ? 'ok' : 'warn') + '">' + (paid ? 'Paid' : 'Open') + '</span></div>' +
+        '<h2>Table ' + esc(o.table) + '</h2>' +
+        '<p class="tot" id="ordTotal">' + money(o.total) + '</p>' +
+        '<p class="muted">' + (paid
+          ? 'Paid by ' + esc(o.closedBy) + (o.closedAt ? ' · ' + esc(o.closedAt) : '')
+          : 'Opened by ' + esc(o.openedBy) + (o.openedAt ? ' · ' + esc(o.openedAt) : '') + ' · official bill, customers cannot edit this') + '</p>' +
+      '</div>' +
+      '<div class="card"><h2>This table</h2><div id="ordLines">' + lineHtml + '</div>' +
+        ((paid && can('orders.view')) || (!paid && can('orders.settle') && active.length) ? '<button class="btn ' + (paid ? 'btn-ghost' : 'btn-primary') + '" id="ordSettle" type="button">' +
+          (paid ? 'Show / print bill' : 'Settle table') + '</button>' : '') +
+      '</div>' +
+      (canAdd ? '<div class="card"><h2>Add dishes</h2>' +
+        '<input id="ordSearch" type="search" placeholder="Search dishes" aria-label="Search dishes" />' +
+        '<div id="ordMenu"><p class="muted">Loading…</p></div></div>' : '');
+    $('ordBack').onclick = function () { currentOrder = null; loadTables(); };
+    $('tableOrderView').querySelectorAll('[data-rm]').forEach(function (b) {
+      b.onclick = function () { askRemoveLine(b.getAttribute('data-rm')); };
+    });
+    if ($('ordSettle')) $('ordSettle').onclick = function () { showBillSheet(paid); };
+    if (canAdd) {
+      renderOrderMenu();
+      $('ordSearch').oninput = renderOrderMenu;
+    }
+  }
+  function renderOrderMenu() {
+    var box = $('ordMenu');
+    if (!box) return;
+    var q = ($('ordSearch') && $('ordSearch').value || '').trim().toLowerCase();
+    var list = menuItems.filter(function (it) {
+      return !q || (it.name + ' ' + (it.note || '')).toLowerCase().indexOf(q) >= 0;
+    });
+    var groups = dishGroups(list);
+    box.innerHTML = groups.map(function (g) {
+      var first = g.items[0];
+      if (g.items.length === 1 && !splitDishName(first.name).size) {
+        return '<div class="add-dish" data-dish="' + esc(first.id) + '"><div><div class="nm">' + esc(first.name) +
+          (first.visible ? '' : ' <span class="badge bad">Out of stock</span>') + '</div>' +
+          '<div class="price">' + money(first.price) + '</div></div>' +
+          '<button class="btn btn-primary sm add" data-add="' + esc(first.id) + '" type="button">+</button></div>';
+      }
+      return '<div class="add-dish"><div><div class="nm">' + esc(g.base) + '</div>' +
+        g.items.map(function (it) {
+          var sz = splitDishName(it.name).size || 'Standard';
+          return '<div class="muted" style="margin-top:6px;display:flex;justify-content:space-between;align-items:center;gap:8px">' +
+            '<span>' + esc(sz) + ' · <span class="price">' + money(it.price) + '</span></span>' +
+            '<button class="btn btn-primary sm add" data-add="' + esc(it.id) + '" type="button">+</button></div>';
+        }).join('') + '</div></div>';
+    }).join('') || '<p class="muted">' + (q ? 'No dish matches.' : 'No dishes on the menu yet.') + '</p>';
+    box.querySelectorAll('[data-add]').forEach(function (b) {
+      b.onclick = function () { addToOrder(b.getAttribute('data-add'), b); };
+    });
+  }
+  function addToOrder(dishId, btn) {
+    if (!currentOrder) return;
+    busy(btn, true);
+    api({ action: 'orderAddLine', orderId: currentOrder.id, dishId: dishId, qty: 1 }).then(function (r) {
+      currentOrder = r.order;
+      var keep = $('ordSearch') ? $('ordSearch').value : '';
+      renderOrderView();
+      if ($('ordSearch') && keep) { $('ordSearch').value = keep; renderOrderMenu(); }
+      var it = findDish(dishId);
+      toast('Added ' + (it ? it.name : 'dish'));
+    }).catch(function (e) {
+      if (ordersUnsupported(e)) showTablesUnavailable();
+      else toast(e.message, true);
+      busy(btn, false);
+    });
+  }
+  function askRemoveLine(lineId) {
+    var line = (currentOrder.lines || []).filter(function (l) { return l.id === lineId; })[0];
+    if (!line) return;
+    var need = me.role !== 'owner';
+    openSheet('<h2>Remove this item?</h2>' +
+      '<p class="hint" style="font-size:14px">' + line.qty + '× ' + esc(line.name) + ' · ' + money(line.lineTotal) + '</p>' +
+      '<label for="rmReason">' + (need ? 'Reason (needed)' : 'Reason (optional)') + '</label>' +
+      '<input id="rmReason" maxlength="200" placeholder="' + (need ? 'e.g. entered on the wrong table' : 'e.g. not wanted') + '" />' +
+      '<p class="msg" id="rmMsg"></p>' +
+      '<div class="row2"><button class="btn btn-ghost" id="rmNo" type="button">Cancel</button>' +
+      '<button class="btn btn-danger" id="rmYes" type="button">Remove</button></div>');
+    $('rmNo').onclick = closeSheet;
+    $('rmYes').onclick = function () {
+      var reason = $('rmReason').value.trim();
+      if (need && reason.length < 4) { $('rmMsg').textContent = 'Please type a short reason'; return; }
+      busy($('rmYes'), true);
+      api({ action: 'orderRemoveLine', orderId: currentOrder.id, lineId: lineId, reason: reason }).then(function (r) {
+        currentOrder = r.order; closeSheet(); renderOrderView(); toast('Removed from the table');
+      }).catch(function (e) { $('rmMsg').textContent = e.message; busy($('rmYes'), false); });
+    };
+  }
+  function billInnerHtml(o, forPrint) {
+    var active = activeLines(o);
+    var rows = active.map(function (l) {
+      return '<div class="bl"><span>' + l.qty + '× ' + esc(l.name) + (l.size && String(l.name).indexOf(l.size) < 0 ? ' · ' + esc(l.size) : '') +
+        '</span><span>' + money(l.lineTotal) + '</span></div>';
+    }).join('') || '<div class="bl"><span>No dishes</span><span></span></div>';
+    return (forPrint ? '<h1>Frost &amp; Flame</h1>' : '') +
+      '<p class="' + (forPrint ? '' : 'hint') + '" style="font-size:14px;margin:0 0 8px">Table ' + esc(o.table) +
+      (o.status === 'paid' ? ' · Paid by ' + esc(o.closedBy) + (o.closedAt ? ' · ' + esc(o.closedAt) : '')
+        : ' · Open · started by ' + esc(o.openedBy)) + '</p>' +
+      '<div class="bill-box">' + rows + '<div class="grand"><span>Total</span><span>' + money(o.total) + '</span></div></div>';
+  }
+  function fillPrintBill(o) {
+    $('printBill').innerHTML = billInnerHtml(o, true) +
+      '<p>Enjoy your food. This is the official bill, settled at the end.</p>';
+    $('printBill').hidden = false;
+  }
+  function showBillSheet(alreadyPaid) {
+    var o = currentOrder;
+    openSheet('<h2>Table ' + esc(o.table) + ' bill</h2>' + billInnerHtml(o, false) +
+      (alreadyPaid ? '<p class="hint">Paid by ' + esc(o.closedBy) + (o.closedAt ? ' · ' + esc(o.closedAt) : '') + '</p>' : '') +
+      '<p class="msg" id="setMsg"></p>' +
+      '<button class="btn btn-ghost" id="billPrint" type="button">Print / show bill</button>' +
+      (alreadyPaid ? '' : '<button class="btn btn-primary" id="billPay" type="button">Mark as paid</button>') +
+      '<button class="btn btn-ghost" id="billClose" type="button">' + (alreadyPaid ? 'Done' : 'Back') + '</button>');
+    $('billClose').onclick = closeSheet;
+    $('billPrint').onclick = function () { fillPrintBill(currentOrder); window.print(); };
+    if ($('billPay')) $('billPay').onclick = function () {
+      busy($('billPay'), true);
+      api({ action: 'orderSettle', orderId: currentOrder.id }).then(function (r) {
+        currentOrder = r.order;
+        toast('Table ' + r.order.table + ' settled · ' + money(r.order.total));
+        showBillSheet(true);
+        renderOrderView();
+      }).catch(function (e) { $('setMsg').textContent = e.message; busy($('billPay'), false); });
+    };
+  }
 
   /* ---------- start ---------- */
   if (token && me) {
