@@ -22,7 +22,7 @@ Apps Script source to paste: `api/Code.gs` in this repo
 9. Reply to Bujji with that URL (or paste it into `js/config.js` as `window.FF_API_URL = '…'` and push).
 
 Admin page (after Pages rebuild):  
-https://karimullashaik0389-cloud.github.io/frost-flame-qr-billing/admin.html
+https://menu.frostandflamee.com/admin.html
 
 Login credentials are in the bot store file (not in git). Ask Bujji for the path if needed.
 

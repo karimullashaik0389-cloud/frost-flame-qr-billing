@@ -2,8 +2,8 @@
 
 Static customer page for Tark Limited / Frost & Flame (GitHub Pages).
 
-- Customer: `https://karimullashaik0389-cloud.github.io/frost-flame-qr-billing/?table=4`
-- Staff admin: `https://karimullashaik0389-cloud.github.io/frost-flame-qr-billing/admin.html`
+- Customer: `https://menu.frostandflamee.com/?table=4`
+- Staff admin: `https://menu.frostandflamee.com/admin.html`
 - Theme deep links: add `&group=solo_m|solo_f|friends|couple|gang|family|family_kids`
 - Fast games test: add `&fast=1` (games appear in ~8s)
 
